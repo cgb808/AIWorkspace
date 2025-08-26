@@ -1,0 +1,39 @@
+{
+  "root": "dev-indexer_1",
+  "structure": [
+    {"path": "app/", "type": "dir", "status": "exists", "purpose": "Service code"},
+    {"path": "app/main.py", "type": "file", "status": "exists", "purpose": "FastAPI entrypoint"},
+    {"path": "app/core/", "type": "dir", "status": "planned", "purpose": "Config, logging, common utils"},
+    {"path": "app/core/config.py", "type": "file", "status": "planned"},
+    {"path": "app/core/logging.py", "type": "file", "status": "planned"},
+    {"path": "app/rag/", "type": "dir", "status": "planned", "purpose": "RAG components"},
+    {"path": "app/rag/embeddings.py", "type": "file", "status": "planned"},
+    {"path": "app/rag/store_pg.py", "type": "file", "status": "planned"},
+    {"path": "app/rag/retrieval.py", "type": "file", "status": "planned"},
+    {"path": "app/rag/pipeline.py", "type": "file", "status": "planned"},
+    {"path": "app/rag/schemas.py", "type": "file", "status": "planned"},
+    {"path": "app/health/", "type": "dir", "status": "planned", "purpose": "Health probes"},
+    {"path": "scripts/remote_ollama_bootstrap.sh", "type": "file", "status": "exists", "purpose": "Ollama one-shot setup"},
+    {"path": "scripts/ollama_steps.sh", "type": "file", "status": "exists"},
+    {"path": "scripts/rag_ingest.py", "type": "file", "status": "exists"},
+    {"path": "sql/rag_core_schema.sql", "type": "file", "status": "exists"},
+    {"path": "sql/rag_indexes.sql", "type": "file", "status": "exists"},
+    {"path": "sql/migrations/", "type": "dir", "status": "planned", "purpose": "Idempotent migration files"},
+    {"path": "docs/AGENT_BOOTSTRAP_CONTEXT.md", "type": "file", "status": "exists"},
+    {"path": "docs/api_collection.postman.json", "type": "file", "status": "exists"},
+    {"path": "docs/REMOTE_WORKSPACE_LAYOUT.md", "type": "file", "status": "exists"},
+    {"path": "docs/agent_bootstrap_context.json", "type": "file", "status": "exists"},
+    {"path": "tests/", "type": "dir", "status": "planned", "purpose": "Automated tests"},
+    {"path": "test_data/", "type": "dir", "status": "exists"},
+    {"path": "requirements.txt", "type": "file", "status": "exists"},
+    {"path": "requirements-gpu.txt", "type": "file", "status": "exists"},
+    {"path": ".env.example", "type": "file", "status": "exists"},
+    {"path": "Dockerfile", "type": "file", "status": "exists"},
+    {"path": "docker-compose.yml", "type": "file", "status": "exists"}
+  ],
+  "meta": {
+    "generated": "2025-08-25",
+    "legend": {"exists": "Present in repo", "planned": "Recommended addition"},
+    "focus": "Remote indexer + RAG deployment"
+  }
+}

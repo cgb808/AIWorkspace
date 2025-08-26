@@ -1,0 +1,12 @@
+psycopg2-binary
+redis
+msgpack
+fastapi
+uvicorn
+requests
+pydantic
+supabase
+prometheus-client
+psutil
+numpy  # (implicit dependency some environments; ensures availability if needed by pynvml)
+nvidia-ml-py  # optional GPU metrics (pynvml)

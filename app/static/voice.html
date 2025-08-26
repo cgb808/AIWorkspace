@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Local Voice Transcription</title>
+<style>
+body { font-family: system-ui, sans-serif; margin: 2rem; max-width: 900px; }
+#log { white-space: pre-wrap; background:#111; color:#eee; padding:1rem; height:160px; overflow:auto; }
+button { margin-right: .75rem; }
+#transcript { white-space: pre-wrap; border:1px solid #ccc; padding:1rem; margin-top:1rem; min-height:140px; }
+.progress { height:6px; background:#444; margin-top:10px; position:relative; }
+.progress span { position:absolute; left:0; top:0; bottom:0; background:#4caf50; width:0%; transition: width .2s; }
+</style>
+</head>
+<body>
+<h1>Local Voice Transcription (whisper.cpp)</h1>
+<p>Records short audio sample (Web Audio API) and sends WAV blob to backend /audio/transcribe.</p>
+<div>
+  <button id="recordBtn">Start</button>
+  <button id="stopBtn" disabled>Stop</button>
+  <select id="lang">
+    <option value="">Auto</option>
+    <option value="en">English</option>
+    <option value="es">Spanish</option>
+    <option value="de">German</option>
+  </select>
+</div>
+<div class="progress"><span id="prog"></span></div>
+<div id="log"></div>
+<h2>Transcript</h2>
+<div id="transcript"></div>
+<script>
+const recordBtn = document.getElementById('recordBtn');
+const stopBtn = document.getElementById('stopBtn');
+const logEl = document.getElementById('log');
+const transcriptEl = document.getElementById('transcript');
+const langSel = document.getElementById('lang');
+const prog = document.getElementById('prog');
+let mediaRecorder, chunks=[]; let startTime;
+
+function log(m){ logEl.textContent += m + '\n'; logEl.scrollTop = logEl.scrollHeight; }
+
+recordBtn.onclick = async () => {
+  if(!navigator.mediaDevices) { log('No mediaDevices'); return; }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
+    chunks=[];
+    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+    mediaRecorder.ondataavailable = e => { if(e.data.size>0) chunks.push(e.data); };
+    mediaRecorder.onstop = exportWav;
+    mediaRecorder.start(250);
+    startTime = performance.now();
+    recordBtn.disabled = true; stopBtn.disabled = false;
+    log('Recording...');
+    tick();
+  } catch(e){ log('Error: '+ e); }
+};
+
+stopBtn.onclick = () => { if(mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop(); recordBtn.disabled=false; stopBtn.disabled=true; };
+
+function tick(){
+  if(mediaRecorder && mediaRecorder.state === 'recording'){
+    const dur = (performance.now()-startTime)/1000; // seconds
+    const pct = Math.min(100, (dur/30)*100); // visualize 30s max
+    prog.style.width = pct + '%';
+    requestAnimationFrame(tick);
+  }
+}
+
+async function exportWav(){
+  log('Finalizing...');
+  const blob = new Blob(chunks, { type:'audio/webm' });
+  // Convert to wav client-side (simpler: send webm and let server handle; but we rely on whisper.cpp expecting wav)
+  // Many browsers don't easily transcode; we just send what we have and server should handle or fail gracefully.
+  const fd = new FormData();
+  fd.append('file', blob, 'audio.webm');
+  if(langSel.value) fd.append('language', langSel.value);
+  log('Uploading '+ (blob.size/1024).toFixed(1) + ' KB');
+  const res = await fetch('/audio/transcribe', { method:'POST', body: fd });
+  if(!res.ok){ transcriptEl.textContent = 'Error: '+ res.status; return; }
+  const data = await res.json();
+  transcriptEl.textContent = data.transcript || '(empty)';
+  log('Done');
+  prog.style.width = '0%';
+}
+</script>
+</body>
+</html>

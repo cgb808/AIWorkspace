@@ -1,0 +1,23 @@
+{
+  "remaining_tasks": [
+    "Implement RAG pipeline logic",
+    "Embedding generation, vector search, retrieval, and prompt composition",
+    "Integrate with external Postgres, Chroma, Redis",
+    "Complete API endpoints",
+    "/rag/query (full retrieval and LLM generation)",
+    "Any additional endpoints (embedding, ingest, etc.)",
+    "Database connection and query logic",
+    "Implement real DB health checks",
+    "CRUD for doc_embeddings and dedup tables",
+    "Production-ready logging and config",
+    "Finalize config.py and logging.py",
+    "Expand and refine tests",
+    "Add tests for RAG pipeline, DB, embedding, and cache logic",
+    "Deployment and orchestration",
+    "Finalize Docker setup for production",
+    "Document external DB setup and connection",
+    "Optional: Add metrics, observability, and error handling",
+    "Integrate with monitoring tools",
+    "Add logging for failure"
+  ]
+}

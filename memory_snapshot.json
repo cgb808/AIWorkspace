@@ -1,0 +1,199 @@
+{
+  "snapshot_metadata": {
+    "name": "ZenGlowAI RAG & KG Environment Snapshot",
+    "snapshot_id": "mem-2025-08-25-001",
+    "created_utc": "2025-08-25T00:00:00Z",
+    "schema_version": "1.0.0",
+    "generator": "GitHub Copilot Memory MCP Snapshot",
+    "description": "Point-in-time structured memory of architecture, components, decisions, and tasks for re-ingestion."
+  },
+  "project": {
+    "codebase_name": "ZenGlowAIWorkshop",
+    "purpose": "RAG + development knowledge graph platform with modular retrieval, ranking (conceptual + LTR), caching, messaging, and local LLM integration.",
+    "primary_objectives": [
+      "Robust retrieval & ranking pipeline (conceptual scoring + learning-to-rank)",
+      "Schema-driven experimentation & observability",
+      "Development Knowledge Graph (DKG) for code & task memory",
+      "Local LLM (Ollama) integration as fallback / offline path",
+      "Efficient caching + real-time messaging (Redis + Postgres NOTIFY bridge)"
+    ]
+  },
+  "architecture": {
+    "layers": [
+      {"name": "API", "tech": "FastAPI", "responsibility": "Expose RAG query endpoints, ranking pipeline, future streaming."},
+      {"name": "Retrieval", "tech": "Postgres + pgvector", "responsibility": "Vector similarity & (planned) ANN dual index."},
+      {"name": "Ranking", "tech": "Python (feature assembler + LTR model)", "responsibility": "Assemble features, apply linear model, (planned) fusion scoring."},
+      {"name": "Caching", "tech": "Redis (JSON + MessagePack)", "responsibility": "Low-latency storage of query results & feature payloads."},
+      {"name": "Messaging", "tech": "Redis Pub/Sub, Postgres NOTIFY", "responsibility": "Propagate build & engagement events to downstream consumers."},
+      {"name": "Knowledge Graph", "tech": "Postgres schema (dev memory)", "responsibility": "Persist missions, epics, code chunks, embeddings for meta reasoning."},
+      {"name": "LLM Integration", "tech": "Ollama (Docker service)", "responsibility": "Local model hosting for answer generation & feature augmentation."}
+    ],
+    "cross_cutting": ["Observability (planned)", "Security & rate limiting (planned)", "Experimentation & scoring weight mgmt (planned)"]
+  },
+  "endpoints": [
+    {"path": "/rag/query", "purpose": "Baseline retrieval + conceptual scoring (legacy path).", "status": "active"},
+    {"path": "/rag/pipeline", "purpose": "Pipeline inspection / debug.", "status": "active"},
+    {"path": "/rag/query2", "purpose": "Enhanced ranking with feature assembly + LTR model + caching.", "status": "active", "planned_extensions": ["fusion scoring output", "detailed feature diagnostics", "streaming token diff"]}
+  ],
+  "retrieval": {
+    "db": "Postgres",
+    "vector_extension": "pgvector",
+    "similarity_metric": "cosine (assumed)",
+    "current_indexing": ["documents table", "chunks table with embeddings"],
+    "planned": ["ANN dual index (HNSW + exact fallback)", "hybrid keyword + vector fusion"]
+  },
+  "ranking": {
+    "conceptual_scoring": {
+      "factors": ["distance", "recency", "metadata signals"],
+      "weights_env_vars": ["RAG_DISTANCE_WEIGHT", "RAG_RECENCY_WEIGHT", "RAG_METADATA_WEIGHT"],
+      "status": "implemented"
+    },
+    "ltr_model": {
+      "type": "Linear combination placeholder",
+      "features_v1": ["similarity_primary", "log_length", "bias"],
+      "status": "implemented (baseline)",
+      "planned": ["pairwise or LambdaMART upgrade", "feature importance logging", "feature store persistence"]
+    },
+    "fusion_scoring": {
+      "status": "pending",
+      "planned_env_vars": ["FUSION_CONCEPTUAL_WEIGHT", "FUSION_LTR_WEIGHT"],
+      "output_fields": ["conceptual_score", "ltr_score", "fused_score"]
+    }
+  },
+  "feature_assembly": {
+    "module": "app/rag/feature_assembler.py",
+    "schema_version": "v1",
+    "compatibility": "Legacy helper shim for old feature shape",
+    "planned_features": ["engagement_rate", "freshness_decay", "authority_score", "semantic_drift"]
+  },
+  "caching_messaging": {
+    "redis_module": "app/core/redis_cache.py",
+    "key_strategy": "Namespace + MD5 hash of logical key",
+    "serializations": ["json", "msgpack"],
+    "rag_query_cache": {"namespace_pattern": "rag:q:{top_k}", "payload_format": "msgpack"},
+    "pubsub_channels": {"build_updates": "build_updates (default)", "engagement_updates": "(via bridge)"},
+    "postgres_bridge_script": "scripts/pg_notify_to_redis_bridge.py",
+    "resiliency_notes": "Global lazy instance; raises RedisCacheError on connection failure."
+  },
+  "knowledge_graph": {
+    "schemas": [
+      "sql/artifacts/dev_knowledge_graph_schema.sql",
+      "sql/artifacts/dev_knowledge_graph_schema_unscoped.sql"
+    ],
+    "entities": ["missions", "epics", "development_log", "code_chunks (with embeddings)", "link tables / relations (planned)"],
+    "uses": ["Historical memory", "RAG augmentation", "Meta analytics"],
+    "planned": ["Temporal reasoning features", "Embedding refresh jobs", "Task outcome scoring"]
+  },
+  "schemas": {
+    "rag_schema_v2": "sql/artifacts/schema_v2.sql",
+    "core_tables": ["documents", "chunks", "interaction_events", "model_registry", "scoring_experiments", "query_performance", "data_quality_logs"],
+    "triggers": ["engagement event triggers -> NOTIFY"],
+    "materialized_views": ["chunk_engagement_stats (refresh workflow pending)"]
+  },
+  "llm_integration": {
+    "provider": "Ollama (docker-compose service 'ollama')",
+    "models_targeted": ["gemma:2b (implied)", "others (future)"] ,
+    "env_var": "OLLAMA_URL",
+    "status": "service defined; host CLI not installed (sudo restriction)",
+    "planned": ["automated model pull on startup", "healthcheck endpoint integration", "model fallback strategy"]
+  },
+  "environment": {
+    "python_version": "3.13.3 (reported)",
+    "services": ["FastAPI app", "Postgres", "Redis", "Ollama (docker)"],
+    "critical_env_vars": [
+      "REDIS_HOST", "REDIS_PORT", "REDIS_DB", "REDIS_PASSWORD", "REDIS_SSL",
+      "OLLAMA_URL", "RAG_DISTANCE_WEIGHT", "RAG_RECENCY_WEIGHT", "RAG_METADATA_WEIGHT",
+      "(planned) FUSION_CONCEPTUAL_WEIGHT", "(planned) FUSION_LTR_WEIGHT"
+    ]
+  },
+  "modules": {
+    "redis_cache": {
+      "file": "app/core/redis_cache.py",
+      "class": "RedisCache",
+      "functional_api": ["cache_set_json", "cache_get_json", "cache_set_msgpack", "cache_get_msgpack", "cache_delete", "cache_rag_query_result", "get_cached_rag_query", "publish_build_update"],
+      "design": "Encapsulated client with hashed namespaced keys and msgpack preference for dense payloads."
+    },
+    "ranking_router": {
+      "file": "app/rag/ranking_router.py",
+      "endpoint": "/rag/query2",
+      "uses": ["embedder", "db_client", "feature_assembler", "LTRModel", "RedisCache"],
+      "caching": "Caches final ranked result keyed by query text & top_k." 
+    }
+  },
+  "scripts": {
+    "publish_build_update": "scripts/publish_build_update.py",
+    "pg_notify_to_redis_bridge": "scripts/pg_notify_to_redis_bridge.py"
+  },
+  "decisions": [
+    {"topic": "Redis key hashing", "decision": "MD5 hashed logical keys to avoid oversized keys and keep predictable namespace length."},
+    {"topic": "MessagePack usage", "decision": "Use msgpack for RAG query caches for compactness and speed."},
+    {"topic": "LTR initial model", "decision": "Start with linear placeholder to enable early feature iteration; upgrade after instrumentation."},
+    {"topic": "Ollama deployment", "decision": "Prefer docker-compose service instead of host install (no sudo)."},
+    {"topic": "Feature schema evolution", "decision": "Versioned feature assembler allowing backward compat function."}
+  ],
+  "risks": [
+    {"risk": "No fusion score yet", "impact": "Incomplete holistic ranking; conceptual vs LTR not reconciled.", "mitigation": "Implement weighted fusion & record components."},
+    {"risk": "Missing engagement refresh job", "impact": "Stale engagement stats degrade personalized ranking.", "mitigation": "Add scheduled refresh & cache invalidation."},
+    {"risk": "Lack of observability", "impact": "Slow diagnosis of performance issues.", "mitigation": "Add metrics (latency, cache hit rate, feature distribution)."},
+    {"risk": "Model unavailability (Ollama not pulled)", "impact": "LLM-dependent endpoints may fail.", "mitigation": "Startup hook to pull models & healthcheck gating."}
+  ],
+  "tasks": {
+    "completed": [
+      "Core RAG endpoints",
+      "Conceptual scoring implementation",
+      "LTR scaffold with feature schema v1",
+      "Redis cache refactor (class + functional API)",
+      "Postgres -> Redis NOTIFY bridge script",
+      "RAG schema v2 creation",
+      "Development knowledge graph schemas + documentation",
+      "Environment variable updates (OLLAMA_URL)"
+    ],
+    "pending": [
+      "Score fusion implementation",
+      "Ranking router tests & feature assembler tests",
+      "ANN dual index routing (HNSW + exact fallback)",
+      "Streaming diff / token-by-token API",
+      "Feature enrichment (engagement_rate, authority_score, freshness_decay)",
+      "Experimentation framework / scoring weight toggles",
+      "Observability (metrics, tracing, recall canary)",
+      "Security hardening (API keys, rate limiting)",
+      "Automated Ollama model pull + healthcheck integration",
+      "Engagement stats refresh consumer job"
+    ]
+  },
+  "next_steps_recommended": [
+    "Implement fusion scoring in /rag/query2 with env-weighted combination.",
+    "Add pytest suite for ranking correctness & cache hit behavior.",
+    "Introduce periodic job to refresh engagement materialized view.",
+    "Add /health/llm endpoint that pings Ollama before serving generation.",
+    "Instrument latency + cache hit metrics (Prometheus or simple counters).",
+    "Design feature schema v2 including engagement + authority.",
+    "Implement model pull bootstrap script for Ollama service start." 
+  ],
+  "config_placeholders": {
+    "fusion_weights": {
+      "FUSION_CONCEPTUAL_WEIGHT": {"default_proposed": 0.4},
+      "FUSION_LTR_WEIGHT": {"default_proposed": 0.6}
+    },
+    "timeouts": {"redis_socket_timeout_secs": 5}
+  },
+  "files_referenced": [
+    "app/core/redis_cache.py",
+    "app/rag/feature_assembler.py",
+    "app/rag/ranking_router.py",
+    "app/rag/pipeline.py",
+    "app/rag/db_client.py",
+    "sql/artifacts/schema_v2.sql",
+    "sql/artifacts/dev_knowledge_graph_schema.sql",
+    "sql/artifacts/dev_knowledge_graph_schema_unscoped.sql",
+    ".env.example",
+    "docker-compose.yml",
+    "scripts/publish_build_update.py",
+    "scripts/pg_notify_to_redis_bridge.py"
+  ],
+  "assumptions": [
+    "Similarity metric is cosine (not explicitly reconfirmed in latest code).",
+    "Feature importance logging not yet implemented.",
+    "Ranking tests exist in minimal form but not covering fusion (pending)."
+  ]
+}

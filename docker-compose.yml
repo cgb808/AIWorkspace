@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    environment:
+      OLLAMA_MODELS: /models
+    volumes:
+      - ollama_models:/models
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://zenglow:examplepassword@<EXTERNAL_DB_HOST>:5432/zenglow
+      OLLAMA_HOST: ollama
+      OLLAMA_PORT: 11434
+      PG_EMBED_DIM: 768
+      REDIS_HOST: <EXTERNAL_REDIS_HOST>
+      CHROMA_HOST: <EXTERNAL_CHROMA_HOST>
+    ports:
+      - "8000:8000"
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+volumes:
+  ollama_models:
