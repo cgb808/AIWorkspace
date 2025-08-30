@@ -1,0 +1,43 @@
+{
+  "total_processed": 100,
+  "accepted": 58,
+  "rejected_inappropriate": 0,
+  "rejected_readability": 37,
+  "rejected_length": 0,
+  "rejected_duplicate": 5,
+  "by_source": {
+    "early_childhood": 10,
+    "historical_figures": 11,
+    "japanese_wisdom": 1,
+    "life_frameworks": 9,
+    "reflection_questions": 15,
+    "veteran_philosophy": 1,
+    "eli5_sample": 3,
+    "safety_curated": 8
+  },
+  "by_category": {
+    "development_foundations": 1,
+    "development_executivefunction": 2,
+    "development_language": 2,
+    "development_play": 1,
+    "development_socialemotional": 1,
+    "development_assessment": 1,
+    "development_behavior": 1,
+    "development_sleep": 1,
+    "philosophy": 11,
+    "wisdom_self_reflection": 1,
+    "framework_stoicresponse": 3,
+    "framework_problemsolving4": 3,
+    "framework_skillmastery5": 3,
+    "philosophical_inquiry": 15,
+    "veteran_wittgenstein": 1,
+    "explanation": 3,
+    "safety": 8
+  },
+  "reading_ease_stats": {
+    "mean": 43.98,
+    "median": 42.8,
+    "min": 22.8,
+    "max": 88.73
+  }
+}

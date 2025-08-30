@@ -3,6 +3,13 @@
 ## Overview
 This document tracks implemented features and pending work for the ZenGlow Indexer / RAG API workspace.
 
+## Current Architecture Update (Aug 2025)
+- **Multi-GPU Setup**: RTX 3060 Ti (8GB) + GTX 1660 Super (6GB)
+- **AI Personalities**: 
+  - RTX 3060 Ti: Leonardo (Mistral 7B Q5_K_M) - The analytical thinker
+  - GTX 1660 Super: Jarvis (Phi3 quantized) - The conversational assistant
+- **Workload Specialization**: Separated deep reasoning from real-time interaction
+
 ## Completed
 - Project scaffolding and initial FastAPI application (`app/main.py`).
 - Health endpoints via `health_router`.
@@ -19,8 +26,11 @@ This document tracks implemented features and pending work for the ZenGlow Index
 - Unit test for RAG pipeline logic (`tests/test_rag_pipeline.py`).
 - API tests expanded to cover `/rag/pipeline` including validation error path.
 - Added runtime dependencies (`requirements.txt`).
+- Multi-GPU Ollama setup with specialized model deployment.
 
 ## In Progress / Next
+- Update backend routing to utilize Leonardo and Jarvis personality endpoints.
+- Configure Jarvis (Phi3) TTS integration on secondary GPU.
 - Provide retrieval scores in `/rag/pipeline` response (extend `DBClient.vector_search`).
 - Replace legacy `/rag/query` or refactor to reuse `RAGPipeline`.
 - Add structured logging and request tracing middleware.

@@ -1,0 +1,60 @@
+# Temporary current affairs working clones
+.ca_shared_tmp/
+.ca_shared_tmp_sub/
+
+# Environment
+.env
+.env-
+*.env.redacted
+
+# --- DO NOT PUSH (auto-managed hygiene block) ---
+# Large dependency trees / vendored sources (retain minimal README if needed)
+node_modules/
+vendor/whisper.cpp/build/
+vendor/whisper.cpp/models/
+vendor/whisper.cpp/examples/**/build/
+
+# Ephemeral runtime / compiled artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Knowledge graph transient & snapshot directories (retain curated snapshots separately if needed)
+artifact/knowledge-graph/run-*/
+artifact/knowledge-graph/latest
+artifact/knowledge-graph/memory_snapshot_*.json
+
+# Generated analysis reports (can be regenerated)
+artifact/analysis/*.json
+artifact/analysis/*.txt
+
+# Archive bulky or deprecated experimental copies
+archive/dashboard\ (copy)/
+archive/dashboard_handoff\ (copy)/
+archive/gemma_phi_ui/
+archive/model_finetune_quant\ (copy)/
+archive/extracted_zip/
+
+# Zip bundles kept only for local reference
+archive/zip/*.zip
+
+# Local PID / temp markers
+*.pid
+.api_pid
+.tmp_api_pid
+
+# Local workspace / editor
+.vscode/*.code-workspace
+
+# Python virtual environments
+.venv/
+venv/
+
+# Build caches
+.pytest_cache/
+.mypy_cache/
+dist/
+build/
+
+# --- END DO NOT PUSH BLOCK ---

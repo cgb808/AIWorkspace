@@ -1,0 +1,83 @@
+[
+  {
+    "name": "ZenGlowWorkspace",
+    "entityType": "SystemComponent",
+    "observations": [
+      "Root repository coordinating RAG, LLM backends, frontend dashboard",
+      "Archived experimental dirs isolated in archive/",
+      "Python FastAPI backend plus Vite React frontend"
+    ]
+  },
+  {
+    "name": "RAGPipeline",
+    "entityType": "Workflow",
+    "observations": [
+      "Stages: retrieve -> feature_assembly -> ltr -> fusion -> llm_generate",
+      "Planned timing instrumentation for stage histograms",
+      "Supports future retrieval mode branching via RAG_RETRIEVAL_MODE env"
+    ]
+  },
+  {
+    "name": "LLMClient",
+    "entityType": "SystemComponent",
+    "observations": [
+      "Selects backend: supabase edge, llama.cpp, ollama, dev_fake",
+      "Provides generate_with_metadata with fallback sequence",
+      "Future: integrate timing + cost metrics"
+    ]
+  },
+  {
+    "name": "FrontendGemmaPhi",
+    "entityType": "SystemComponent",
+    "observations": [
+      "React route /gemma-phi for chat UI",
+      "Not yet wired to /rag/query endpoint",
+      "Will surface per-stage latency once instrumentation added"
+    ]
+  },
+  {
+    "name": "IndexingScript",
+    "entityType": "Function",
+    "observations": [
+      "scripts/index_codebase.py hashes Python modules",
+      "Outputs project-index-runtime.json for model registry seeding",
+      "Needs exclusion of archive/ paths"
+    ]
+  },
+  {
+    "name": "DevOpsBacklog",
+    "entityType": "Document",
+    "observations": [
+      "Contains tasks: stage timing, fusion weight endpoint, retrieval branching",
+      "Also lists structured logging, rate limiting, hypertable tasks",
+      "Acts as planning source for automation extraction"
+    ]
+  },
+  {
+    "name": "StageTimingPlan",
+    "entityType": "Strategy",
+    "observations": [
+      "Add timers around each RAG stage",
+      "Expose metrics via Prometheus + JSON",
+      "Return timings in response payload for UI"
+    ]
+  },
+  {
+    "name": "FusionWeightsManagement",
+    "entityType": "Strategy",
+    "observations": [
+      "Provide GET/PUT /rag/fusion/weights endpoint",
+      "Persist weights and invalidate fusion cache",
+      "Enable runtime experimentation without redeploy"
+    ]
+  },
+  {
+    "name": "RetrievalModeBranching",
+    "entityType": "Strategy",
+    "observations": [
+      "Environment variable RAG_RETRIEVAL_MODE toggles retrieval backend",
+      "Planned modes: pgvector | supabase_rpc",
+      "Facilitates A/B retrieval experiments"
+    ]
+  }
+]

@@ -1,6 +1,6 @@
 # ZenGlow RAG / Retrieval Task Checklist
 
-Last Updated: 2025-08-26
+Last Updated: 2025-08-27
 Source Context: Development progress, hybrid architecture draft, Artifact B scaffold, ranking router integration.
 
 ---
@@ -36,13 +36,13 @@ Source Context: Development progress, hybrid architecture draft, Artifact B scaf
 ---
 ## 2. In Progress / Drafted
 - Hybrid retrieval architecture doc (summary placeholder; full spec external).
-- Refactor plan to unify legacy `/rag/query` with ranking + fusion path.
+- (Moved to Completed) Legacy `/rag/query` now delegates to ranking + fusion path.
 
 ---
 ## 3. Next (Short-Term Targets)
 | Priority | Task | Notes |
 |----------|------|-------|
-| P0 | Refactor `/rag/query` to reuse pipeline or deprecate | Reduce duplicate logic |
+| P0 | (Done) Refactor `/rag/query` to reuse ranking pipeline | Completed – remove duplicate logic |
 | P0 | Add tests for fusion scoring + ranking router & feature assembler | Ensure stability before expansions |
 | P1 | Add DI-based embedder usage in ranking router (remove local instantiation) | Unify embedding path |
 | P1 | Add advanced score fusion strategy (additional components: recency, metadata tags) | Extend conceptual component beyond distance |

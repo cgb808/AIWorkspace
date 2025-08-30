@@ -1,0 +1,28 @@
+{
+  "input_distribution": {
+    "philosophical_guide": 128,
+    "family_tutor": 314,
+    "general_assistant": 1321,
+    "educational_expert": 175
+  },
+  "target_distribution": {
+    "general_assistant": 1069,
+    "family_tutor": 290,
+    "educational_expert": 290,
+    "philosophical_guide": 193,
+    "other": 96
+  },
+  "final_distribution": {
+    "general_assistant": 1069,
+    "family_tutor": 290,
+    "philosophical_guide": 193,
+    "educational_expert": 290
+  },
+  "sampling_actions": {
+    "general_assistant": "downsampled_from_1321_to_1069",
+    "family_tutor": "downsampled_from_314_to_290",
+    "educational_expert": "upsampled_from_175_to_290",
+    "philosophical_guide": "upsampled_from_128_to_193",
+    "other": "no_examples"
+  }
+}

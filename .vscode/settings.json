@@ -1,9 +1,8 @@
 {
-  "github.copilot.chat.commitMessageGeneration.instructions": "Standard Operating Procedure:\n1. Project Context: Use the `project-index.json` file as your map of the entire project for all analysis.\n2. Execution Rule: Provide exactly ONE terminal command per step. I will run it and show you the result. You must wait for the output before providing the next command.\nMy Request: Explain the following code. Focus on its purpose, key functionalities, and how it integrates with other parts of the system. Provide a high-level overview first, then dive into details as needed. If there are any potential issues or areas for improvement, highlight them."
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "github.copilot.chat.languageContext.typescript.enabled": true,
+    "github.copilot.chat.languageContext.fix.typescript.enabled": true,
+    "github.copilot.chat.languageContext.inline.typescript.enabled": true,
+    "cmake.allowCommentsInPresetsFile": false,
+    "cmake.buildTask": false
 }
-  // ...existing code...
-  "python.formatting.provider": "black",
-  "python.linting.enabled": true,
-  "python.linting.flake8Enabled": true,
-  "python.linting.ruffEnabled": true,
-  "editor.formatOnSave": true

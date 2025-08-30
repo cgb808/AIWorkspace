@@ -19,12 +19,19 @@ _BACKCOMPAT_MAP: Dict[str, str] = {
     "RAG_TOP_K": "RAG_TOP_K_DEFAULT",
 }
 
-# Non-secret required env vars (fail-fast if missing)
-REQUIRED_ENV: List[str] = [
-    "DATABASE_URL",
-    "REDIS_HOST",
-    "REDIS_PORT",
-]
+# Non-secret required env vars (fail-fast if missing in STRICT mode)
+STRICT_ENV = os.getenv("STRICT_ENV", "true").lower() == "true"
+if STRICT_ENV:
+    REQUIRED_ENV: List[str] = [
+        "DATABASE_URL",
+        "REDIS_HOST",
+        "REDIS_PORT",
+    ]
+else:
+    # Minimal set – allow degraded startup where Redis is optional and DB may be swapped later
+    REQUIRED_ENV = [
+        "DATABASE_URL",
+    ]
 
 # Heuristic substrings that mark a var as secret (excluded from snapshot)
 _SECRET_MARKERS = ["KEY", "SECRET", "PASS", "TOKEN", "PASSWORD"]

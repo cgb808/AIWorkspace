@@ -1,0 +1,10 @@
+{
+  "subject": "science",
+  "total_examples": 1377,
+  "source_files": {
+    "abhi26_dpo-scientific-reasoning_instructional.jsonl": 100,
+    "zeroshot_arxiv-biology_instructional.jsonl": 1277
+  },
+  "output_file": "data/standard/science_standard_dataset.jsonl",
+  "recommended_phases": "5-phase calculative training"
+}

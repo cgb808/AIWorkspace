@@ -12,7 +12,7 @@ import requests, psycopg2
 from typing import List
 
 EMBED_ENDPOINT = os.getenv("EMBED_ENDPOINT", "http://127.0.0.1:8000/model/embed")
-DSN = os.getenv("DATABASE_URL")
+DSN = os.getenv("DATABASE_URL") or os.getenv("SUPABASE_DB_URL")
 CHUNK_SIZE = 800
 OVERLAP = 80
 
@@ -41,14 +41,16 @@ def embed(chunks: List[str]) -> List[List[float]]:
 
 def insert(rows):
     if not DSN:
-        raise SystemExit("DATABASE_URL not set")
+        raise SystemExit("DATABASE_URL / SUPABASE_DB_URL not set")
     import psycopg2
     from psycopg2.extras import execute_values
     with psycopg2.connect(DSN) as conn:
         with conn.cursor() as cur:
-            execute_values(cur,
+            execute_values(
+                cur,
                 "INSERT INTO doc_embeddings (source, chunk, embedding, batch_tag) VALUES %s",
-                rows)
+                rows,
+            )
 
 def process(paths: List[str], source: str, batch_tag: str):
     all_rows=[]

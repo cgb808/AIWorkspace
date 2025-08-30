@@ -1,0 +1,24 @@
+{
+  "dataset_name": "Hybrid Methodology + Mathematics Dataset",
+  "total_examples": 1000,
+  "creation_date": "2025-08-29T12:29:56.828625",
+  "composition": {
+    "pure_methodology": 500,
+    "mathematics_with_methodology": 500
+  },
+  "example_type_counts": {
+    "mathematics_with_methodology": 500,
+    "pure_methodology": 500
+  },
+  "methodology_distribution": {
+    "Conceptual Explanation": 85,
+    "Error Analysis": 114,
+    "Step-by-Step Teaching": 97,
+    "Socratic Questioning": 103,
+    "Scaffolding": 101
+  },
+  "training_approach": "Combination of subject-agnostic teaching techniques with mathematics-specific content enhanced with methodology",
+  "hypothesis": "Combining pure methodology with subject-specific methodology-enhanced content will produce optimal teaching AI",
+  "format": "instruction-input-output with type and methodology tagging",
+  "use_case": "Testing hybrid approach for calculative fine-tuning"
+}

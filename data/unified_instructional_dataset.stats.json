@@ -1,0 +1,22 @@
+{
+  "files_processed": 9,
+  "total_examples": 1943,
+  "examples_by_role": {
+    "philosophical_guide": 128,
+    "family_tutor": 315,
+    "general_assistant": 1324,
+    "educational_expert": 176
+  },
+  "examples_by_source": {
+    "scripts/DATASET_for TUTOR_persona/combined_curated_cleaned_from_raw_v5_min_formatted.jsonl": 1797,
+    "data/family_tutor/enhanced_family_tutor.jsonl": 54,
+    "data/eli5_sample.jsonl": 3,
+    "data/stoic/early_childhood_development.jsonl": 20,
+    "data/stoic/historical_figures.jsonl": 15,
+    "data/stoic/japanese_concepts.jsonl": 11,
+    "data/stoic/life_lessons_frameworks.jsonl": 15,
+    "data/stoic/reflection_questions.jsonl": 20,
+    "data/stoic/veteran_philosophy.jsonl": 8
+  },
+  "quality_filters": {}
+}

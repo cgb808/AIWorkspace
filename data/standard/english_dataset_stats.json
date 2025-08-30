@@ -1,0 +1,13 @@
+{
+  "subject": "english",
+  "total_examples": 25000,
+  "source_files": {
+    "euclaise_writingprompts_instructional.jsonl": 5000,
+    "Gryphe_Opus-WritingPrompts_instructional.jsonl": 5000,
+    "rajpurkar_squad_instructional.jsonl": 5000,
+    "ehovy_race_middle_instructional.jsonl": 5000,
+    "deepmind_narrativeqa_instructional.jsonl": 5000
+  },
+  "output_file": "data/standard/english_standard_dataset.jsonl",
+  "recommended_phases": "5-phase calculative training"
+}

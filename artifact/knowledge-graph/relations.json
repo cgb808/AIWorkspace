@@ -1,0 +1,12 @@
+[
+  { "from": "ZenGlowWorkspace", "relationType": "contains", "to": "RAGPipeline" },
+  { "from": "ZenGlowWorkspace", "relationType": "contains", "to": "LLMClient" },
+  { "from": "ZenGlowWorkspace", "relationType": "contains", "to": "FrontendGemmaPhi" },
+  { "from": "ZenGlowWorkspace", "relationType": "contains", "to": "IndexingScript" },
+  { "from": "ZenGlowWorkspace", "relationType": "tracks", "to": "DevOpsBacklog" },
+  { "from": "RAGPipeline", "relationType": "plans_instrumentation_via", "to": "StageTimingPlan" },
+  { "from": "RAGPipeline", "relationType": "adjusts_weights_with", "to": "FusionWeightsManagement" },
+  { "from": "RAGPipeline", "relationType": "branches_via", "to": "RetrievalModeBranching" },
+  { "from": "FrontendGemmaPhi", "relationType": "displays_timings_from", "to": "StageTimingPlan" },
+  { "from": "IndexingScript", "relationType": "needs_exclusion", "to": "archive_dir" }
+]

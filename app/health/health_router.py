@@ -32,7 +32,7 @@ query_stats = QueryStats()
 MAX_LAT_SAMPLES = 200
 
 def register_model(name: str, family: str, quant: Optional[str] = None, context_len: Optional[int] = None, role: Optional[str] = None, loaded: bool = False, throughput_tps: Optional[float] = None) -> None:
-    existing = next((m for m in model_registry if m["name"] == name), None)
+    existing = next((m for m in model_registry if m.get("name") == name), None)
     record: ModelRecord = ModelRecord(
         name=name,
         family=family,
@@ -103,18 +103,21 @@ def health_ollama() -> Dict[str, Any]:
 
 @health_router.get("/health/db")
 def health_db() -> Dict[str, Any]:
-    """Check DB health by connecting and running SELECT 1."""
-    dsn = os.getenv("DATABASE_URL")
+    """Check DB health using DSN precedence + expose last client init error."""
+    dsn = os.getenv("DATABASE_URL") or os.getenv("SUPABASE_DB_URL")
+    last_err = os.getenv("DB_CLIENT_LAST_ERROR")
+    if not dsn:
+        return {"db": "disabled", "reason": "no DSN env set", "last_error": last_err}
     try:
         with psycopg2.connect(dsn) as conn:  # type: ignore[arg-type]
             with conn.cursor() as cur:
                 cur.execute("SELECT 1;")
                 result = cur.fetchone()
         if not result:
-            return {"db": "fail", "error": "no result"}
-        return {"db": "ok", "result": result[0]}
+            return {"db": "fail", "error": "no result", "last_error": last_err}
+        return {"db": "ok", "result": result[0], "last_error": last_err}
     except Exception as e:  # pragma: no cover - environmental
-        return {"db": "fail", "error": str(e)}
+        return {"db": "fail", "error": str(e), "last_error": last_err}
 
 @health_router.get("/health/models")
 def health_models() -> Dict[str, Any]:
@@ -129,6 +132,60 @@ def json_metrics() -> Dict[str, Any]:
         "models": get_model_registry(),
         "system": get_system_metrics(),
     }
+
+@health_router.get("/health/aggregated")
+def health_aggregated() -> Dict[str, Any]:
+    """Aggregated health status for all services for dashboard display."""
+    try:
+        # Check database
+        db_result = health_db()
+        db_status = "healthy" if db_result.get("db") == "ok" else "unhealthy"
+        
+        # Check Ollama 
+        ollama_result = health_ollama()
+        ollama_status = "healthy" if ollama_result.get("ollama") == "ok (stub)" else "unhealthy"
+        
+        # Check models
+        models = get_model_registry()
+        loaded_models = [m for m in models if m.get("loaded", False)]
+        models_status = "healthy" if len(loaded_models) > 0 else "degraded"
+        
+        # System metrics
+        system_metrics = get_system_metrics()
+        cpu_usage = system_metrics.get("cpu_percent", 0)
+        memory_usage = system_metrics.get("memory_percent", 0)
+        system_status = "healthy"
+        if cpu_usage > 80 or memory_usage > 85:
+            system_status = "degraded"
+        elif cpu_usage > 95 or memory_usage > 95:
+            system_status = "unhealthy"
+        
+        # Overall status
+        statuses = [db_status, ollama_status, models_status, system_status]
+        if "unhealthy" in statuses:
+            overall_status = "unhealthy"
+        elif "degraded" in statuses:
+            overall_status = "degraded"
+        else:
+            overall_status = "healthy"
+        
+        return {
+            "overall_status": overall_status,
+            "services": {
+                "database": {"status": db_status, "details": db_result},
+                "ollama": {"status": ollama_status, "details": ollama_result},
+                "models": {"status": models_status, "loaded_count": len(loaded_models), "total_count": len(models)},
+                "system": {"status": system_status, "cpu_percent": cpu_usage, "memory_percent": memory_usage}
+            },
+            "timestamp": system_metrics.get("timestamp"),
+            "uptime_seconds": system_metrics.get("uptime_seconds")
+        }
+    except Exception as e:
+        return {
+            "overall_status": "unhealthy",
+            "error": str(e),
+            "timestamp": get_system_metrics().get("timestamp")
+        }
 
 # ---------------- Prometheus Metrics -----------------
 try:

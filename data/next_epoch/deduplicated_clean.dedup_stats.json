@@ -1,0 +1,31 @@
+{
+  "total_processed": 1943,
+  "exact_duplicates": 0,
+  "near_duplicates": 0,
+  "quality_filtered": 5,
+  "leakage_detected": 980,
+  "safety_issues": 0,
+  "final_count": 1938,
+  "role_stats": {
+    "philosophical_guide": {
+      "count": 128,
+      "avg_tokens": 127.375,
+      "total_tokens": 16304
+    },
+    "family_tutor": {
+      "count": 314,
+      "avg_tokens": 151.86624203821657,
+      "total_tokens": 47686
+    },
+    "general_assistant": {
+      "count": 1321,
+      "avg_tokens": 129.93716881150644,
+      "total_tokens": 171647
+    },
+    "educational_expert": {
+      "count": 175,
+      "avg_tokens": 152.32,
+      "total_tokens": 26656
+    }
+  }
+}

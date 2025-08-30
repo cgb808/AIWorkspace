@@ -1,0 +1,85 @@
+# Kong Gateway Configuration (DB-less mode)
+_format_version: "3.0"
+
+services:
+  - name: fastapi-backend
+    url: http://backend:8000
+    tags: ["rag-api"]
+  
+  - name: metrics-ws
+    url: http://backend:8000
+    tags: ["websocket"]
+
+routes:
+  # API Routes
+  - name: api-routes
+    service: fastapi-backend
+    paths: 
+      - /api/
+      - /rag/
+      - /health
+      - /metrics
+      - /llm/
+      - /leonardo/
+    strip_path: false
+    preserve_host: true
+
+  # WebSocket Metrics Route
+  - name: metrics-websocket
+    service: metrics-ws
+    paths: ["/ws/metrics"]
+    protocols: ["http", "https"]
+    strip_path: false
+    preserve_host: true
+
+  # Legacy REST v1 route (development stub)
+  - name: rest-v1
+    service: fastapi-backend
+    paths: ["/rest/v1/"]
+    strip_path: false
+
+plugins:
+  # CORS for API routes
+  - name: cors
+    route: api-routes
+    config:
+      origins: 
+        - "http://localhost:5173"
+        - "http://localhost:3000"
+        - "https://your-frontend-domain.com"
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+      headers: ["Accept", "Accept-Version", "Content-Length", "Content-MD5", "Content-Type", "Date", "X-Auth-Token", "Authorization"]
+      exposed_headers: ["X-Auth-Token"]
+      credentials: true
+      max_age: 3600
+
+  # Rate limiting for API
+  - name: rate-limiting
+    route: api-routes
+    config:
+      minute: 100
+      hour: 1000
+      policy: local
+
+  # Request logging
+  - name: file-log
+    config:
+      path: /tmp/kong-access.log
+      format: json
+
+# Optional: Upstream health checks
+upstreams:
+  - name: backend-upstream
+    algorithm: round-robin
+    healthchecks:
+      active:
+        http_path: "/health"
+        healthy:
+          interval: 10
+          successes: 3
+        unhealthy:
+          interval: 5
+          http_failures: 3
+    targets:
+      - target: backend:8000
+        weight: 100

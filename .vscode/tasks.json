@@ -7,6 +7,85 @@
       "command": "bash run_tests.sh",
       "group": "test",
       "problemMatcher": []
+    },
+    {
+      "label": "Serve API",
+      "type": "shell",
+      "command": "make serve",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Chat Dev (API+Dashboard)",
+      "type": "shell",
+      "command": "make chat-dev",
+      "problemMatcher": []
+    },
+    {
+      "label": "SOP Sync",
+      "type": "shell",
+      "command": "make sop-sync",
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate Interruption Recovery Dataset",
+      "type": "shell",
+      "command": "python3 fine_tuning/training/scripts/generate_interruption_recovery_dataset.py --out-dir fine_tuning/datasets/processed/interruption_handling --seed 42",
+      "problemMatcher": []
+    }
+    ,
+    {
+      "label": "Sync Switchr To Zen",
+      "type": "shell",
+      "command": "python3 scripts/sync_switchr_to_zen.py",
+      "problemMatcher": [],
+      "detail": "Copy central_control, configs, scripts, and docs into ZenGlowAIWorkshop"
+    }
+    ,
+    {
+      "label": "Sync Switchr (Custom Target)",
+      "type": "shell",
+      "command": "python3 scripts/sync_switchr_to_zen.py --target ${input:syncTarget}",
+      "problemMatcher": [],
+      "detail": "Sync Switchr artifacts to an arbitrary absolute target path"
+    }
+    ,
+    {
+      "label": "Sync Switchr (Remote beast1)",
+      "type": "shell",
+      "command": "python3 scripts/sync_switchr_to_zen.py --target ${input:remoteSyncTarget}",
+      "problemMatcher": [],
+      "detail": "Rsync Switchr artifacts to remote host (beast1)"
+    }
+    ,
+    {
+      "label": "Sync Switchr (Auto beast1)",
+      "type": "shell",
+      "command": "python3 scripts/sync_switchr_to_zen.py --auto --dry-run",
+      "problemMatcher": [],
+      "detail": "Auto-detect beast1 config (dry-run first)"
+    }
+    ,
+    {
+      "label": "Sync Switchr (Auto beast1 NOW)",
+      "type": "shell",
+      "command": "python3 scripts/sync_switchr_to_zen.py --auto",
+      "problemMatcher": [],
+      "detail": "Auto-detect beast1 config and execute sync"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "syncTarget",
+      "type": "promptString",
+      "description": "Absolute target repository path (e.g. /home/cgbowen/ZenGlowAIWorkshop)",
+      "default": "/home/cgbowen/ZenGlowAIWorkshop"
+    },
+    {
+      "id": "remoteSyncTarget",
+      "type": "promptString",
+      "description": "Remote rsync target (user@beast1:/abs/path/to/repo)",
+      "default": "cgbowen@beast1:/home/cgbowen/ZenGlowAIWorkshop"
     }
   ]
 }

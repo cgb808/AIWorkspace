@@ -1,8 +1,0 @@
-# Requirements for Linting and Formatting
-ruff
-black
-isort
-flake8
-pre-commit
-mypy
-pytest

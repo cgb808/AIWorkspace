@@ -1,0 +1,22 @@
+%% Mermaid graph of core entities (excerpt)
+graph TD
+  ZGW[ZenGlowWorkspace]
+  RAG[RAGPipeline]
+  LLM[LLMClient]
+  UI[FrontendGemmaPhi]
+  IDX[IndexingScript]
+  BKG[DevOpsBacklog]
+  TIM[StageTimingPlan]
+  FUS[FusionWeightsManagement]
+  RET[RetrievalModeBranching]
+
+  ZGW --> RAG
+  ZGW --> LLM
+  ZGW --> UI
+  ZGW --> IDX
+  ZGW --> BKG
+  RAG --> TIM
+  RAG --> FUS
+  RAG --> RET
+  UI --> TIM
+  IDX -->|needs_exclusion| archive_dir[(archive_dir)]

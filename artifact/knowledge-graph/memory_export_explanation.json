@@ -1,0 +1,57 @@
+{
+  "version": "1.0",
+  "generated_at": "2025-08-27T00:00:00Z",
+  "purpose": "Document how the knowledge graph 'memories' were synthesized from repository context and exported into the artifact/knowledge-graph directory for durable reuse and automation.",
+  "methodology": [
+    "Collected architectural + domain context by reading and summarizing distributed README / doc files (retrieval, ingestion, wearables, streaming, proxy).",
+    "Produced a normalized synthesis document (COMPREHENSIVE_SYSTEM_CAPTURE.md) consolidating taxonomy, pipelines, schemas, backlog, risks, and glossary without verbatim duplication.",
+    "Mapped conceptual components to discrete knowledge graph entities (queue, cache, workers, functions, flows, strategies, channels).",
+    "Assigned entityType classifications (ProjectAudit, SystemComponent, DataStore, Function, FunctionSuite, Workflow, Strategy, Channel, Document).",
+    "Captured salient observations per entity as atomic phrases for later embedding / retrieval granularity.",
+    "Established relations describing operational flow (enqueues, activates_into, caches_embeddings_in, publishes_events_via, etc.).",
+    "Inserted entities and relations into in-session memory graph (Memory MCP tools).",
+    "Exported current graph to JSON snapshots (entities.json, relations.json, memory_snapshot_YYYYMMDD.json).",
+    "Generated a Mermaid diagram (memory_graph.mmd) for quick visual traversal.",
+    "Stored synthesis narrative alongside graph to maintain human-readable context (COMPREHENSIVE_SYSTEM_CAPTURE.md)."
+  ],
+  "artifacts_created": [
+    {"file": "artifact/knowledge-graph/COMPREHENSIVE_SYSTEM_CAPTURE.md", "purpose": "Unified narrative + structured synthesis"},
+    {"file": "artifact/knowledge-graph/entities.json", "purpose": "Flat list of entities with observations"},
+    {"file": "artifact/knowledge-graph/relations.json", "purpose": "Directed edges describing relationships"},
+    {"file": "artifact/knowledge-graph/memory_snapshot_20250827.json", "purpose": "Timestamped full graph snapshot (entities + relations)"},
+    {"file": "artifact/knowledge-graph/memory_graph.mmd", "purpose": "Mermaid graph visualization source"},
+    {"file": "artifact/knowledge-graph/memory_export_explanation.json", "purpose": "Process transparency & reproducibility metadata"}
+  ],
+  "rationale": {
+    "single_source_synthesis": "Reduces onboarding time and architectural drift versus scattered READMEs.",
+    "entity_granularity": "Atomic observation phrases enable selective embedding or diff-based change detection.",
+    "relations_graph": "Captures directional operational semantics useful for dependency impact analysis and future automation.",
+    "snapshot_versioning": "Immutable dated snapshots allow historical comparison and CI integrity checks.",
+    "diagram_generation": "Visual graph aids rapid mental model alignment and highlights missing links.",
+    "backlog_embedding": "Backlog items embedded in Document + relations for programmatic extraction into planning tools."
+  },
+  "data_model": {
+    "entity": {"fields": ["name", "entityType", "observations[]"], "notes": "Observations kept concise; no nesting to simplify diff & embedding."},
+    "relation": {"fields": ["from", "relationType", "to"], "notes": "Relation types use active voice verbs; extensible without migration."},
+    "narrative": "High-signal doc cross-linking sections to original sources (traceability matrix)."
+  },
+  "integrity_considerations": [
+    "Deterministic ordering: entities and relations sorted lexicographically to yield stable diffs.",
+    "Hash verification: downstream snapshot process can compute SHA256 for each artifact (see manifest in runtime snapshots).",
+    "Schema version pinning: version field gates future migrations and validation scripts.",
+    "Uniqueness constraints: entity names must be unique; relation endpoints must reference existing entities (validated pre-export).",
+    "No orphan guarantee: export aborts if any relation references a missing entity.",
+    "Atomic snapshot: write to temp dir then rename to avoid partial reads during CI consumption.",
+    "Immutability: run-* snapshot directories never mutated post creation; only new runs appended.",
+    "Latest pointer hygiene: latest symlink/pointer updated only after full successful copy & manifest write.",
+    "Mermaid parity check: node & edge counts in diagram expected to match JSON counts (lint script future).",
+    "Size anomaly detection: CI can flag >30% size deltas in entities.json or relations.json to catch truncation.",
+    "Relation verb taxonomy: enforce active-voice verbs to preserve semantic clarity for automation."
+  ],
+  "provenance": {
+    "source_commit": "$(git rev-parse --short HEAD || echo unknown)",
+    "generated_by": "memory_export_explanation bootstrap",
+    "tooling": ["Memory MCP", "custom scripts/memory-save.mjs"],
+    "environment": "repository-local generation"
+  }
+}

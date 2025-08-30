@@ -1,0 +1,29 @@
+{
+  "total_processed": 1943,
+  "exact_duplicates": 0,
+  "quality_filtered": 4,
+  "actual_pii_detected": 2,
+  "final_count": 1937,
+  "role_stats": {
+    "philosophical_guide": {
+      "count": 69,
+      "avg_tokens": 95.73913043478261,
+      "total_tokens": 6606
+    },
+    "general_assistant": {
+      "count": 1844,
+      "avg_tokens": 137.65780911062907,
+      "total_tokens": 253841
+    },
+    "educational_expert": {
+      "count": 7,
+      "avg_tokens": 65.0,
+      "total_tokens": 455
+    },
+    "family_tutor": {
+      "count": 17,
+      "avg_tokens": 74.58823529411765,
+      "total_tokens": 1268
+    }
+  }
+}

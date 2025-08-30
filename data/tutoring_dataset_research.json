@@ -1,0 +1,767 @@
+{
+  "datasets": [
+    {
+      "id": "Eedi/Question-Anchored-Tutoring-Dialogues-2k",
+      "description": "\n\t\n\t\t\n\t\tQuestion-Anchored-Tutoring-Dialogues-2k\n\t\n\n\n\nThis dataset contains dialogues from math tutoring interventions recorded on Eedi. \n\n\t\n\t\t\n\t\tDataset Details\n\t\n\n\n\t\n\t\t\n\t\tDataset Description\n\t\n\n\nEach dialogue represents a chat-based conversation between a tutor and a student prompted by the student requesting assistance while working on a lesson. Dialogues are accompanied with 2 sources of meta-data:\n\nDQ-Question-Metadata: The question the student was working on that prompted the tutoring\u2026 See the full description on the dataset page: https://huggingface.co/datasets/Eedi/Question-Anchored-Tutoring-Dialogues-2k.",
+      "downloads": 133,
+      "likes": 2,
+      "search_term": "tutoring",
+      "tags": [
+        "task_categories:text-generation",
+        "language:en",
+        "license:cc-by-nc-4.0",
+        "size_categories:10K<n<100K",
+        "format:parquet",
+        "modality:tabular",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us",
+        "Education"
+      ],
+      "tutoring_score": 14.332999999999998
+    },
+    {
+      "id": "Josephgflowers/OpenOrca-Step-by-step-reasoning",
+      "description": "This work was performed to help models with reasoning. I developed it working on my Cinder model, a STEM q and a model. \nModified OpenORCA Step-by-Step Reasoning Dataset Overview\nThe Modified OpenORCA Step-by-Step Reasoning Dataset represents a groundbreaking resource in the field of artificial intelligence, specifically designed to enhance the reasoning capabilities of AI models. This unique dataset is the result of a meticulous process of sorting, selecting, and altering dialogues from the\u2026 See the full description on the dataset page: https://huggingface.co/datasets/Josephgflowers/OpenOrca-Step-by-step-reasoning.",
+      "downloads": 59,
+      "likes": 12,
+      "search_term": "step-by-step",
+      "tags": [
+        "license:mit",
+        "size_categories:10K<n<100K",
+        "format:json",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "arxiv:2306.02707",
+        "arxiv:2301.13688",
+        "arxiv:2302.13971",
+        "region:us"
+      ],
+      "tutoring_score": 14.258999999999999
+    },
+    {
+      "id": "Rhombus18/53M-Token-Instruction-Code-QA-Dataset",
+      "description": "\n\t\n\t\t\n\t\tWater Demonstrator Dataset\n\t\n\nA high-quality, diverse instruction-tuned dataset for training the 10M parameter \"Water\" model (Brahma architecture).\n\n\t\n\t\t\n\t\tPurpose\n\t\n\nThis dataset is designed for instruction-following, reasoning, code, dialogue, and multilingual tasks, targeting robust generalization for small LLMs.\n\n\t\n\t\t\n\t\tStructure\n\t\n\n\nEach category is saved as a separate .jsonl file:\nmath_reasoning.jsonl\nlogic_qa.jsonl\ninstructions.jsonl\ndialogue.jsonl\ncode.jsonl\nmultilingual.jsonl\u2026 See the full description on the dataset page: https://huggingface.co/datasets/Rhombus18/53M-Token-Instruction-Code-QA-Dataset.",
+      "downloads": 15,
+      "likes": 1,
+      "search_term": "instruction",
+      "tags": [
+        "region:us"
+      ],
+      "tutoring_score": 14.115
+    },
+    {
+      "id": "FreedomIntelligence/medical-o1-reasoning-SFT",
+      "description": "\n\t\n\t\t\n\t\tNews\n\t\n\n[2025/04/22] We split the data and kept only the medical SFT dataset (medical_o1_sft.json). The file medical_o1_sft_mix.json contains a mix of medical and general instruction data.\n[2025/02/22] We released the distilled dataset from Deepseek-R1 based on medical verifiable problems. You can use it to initialize your models with the reasoning chain from Deepseek-R1.\n[2024/12/25] We open-sourced the medical reasoning dataset for SFT, built on medical verifiable problems and an LLM\u2026 See the full description on the dataset page: https://huggingface.co/datasets/FreedomIntelligence/medical-o1-reasoning-SFT.",
+      "downloads": 19110,
+      "likes": 858,
+      "search_term": "reasoning",
+      "tags": [
+        "task_categories:question-answering",
+        "task_categories:text-generation",
+        "language:en",
+        "language:zh",
+        "license:apache-2.0",
+        "size_categories:10K<n<100K",
+        "format:json",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "arxiv:2412.18925",
+        "region:us",
+        "medical",
+        "biology"
+      ],
+      "tutoring_score": 13
+    },
+    {
+      "id": "LangAGI-Lab/magpie-reasoning-v1-20k-math-verifiable-step-by-step-rationale-alpaca-format",
+      "description": "",
+      "downloads": 103,
+      "likes": 2,
+      "search_term": "step-by-step",
+      "tags": [
+        "size_categories:10K<n<100K",
+        "format:parquet",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us"
+      ],
+      "tutoring_score": 11.302999999999999
+    },
+    {
+      "id": "drwlf/Teaching-Dataset",
+      "description": "\n\t\n\t\t\n\t\tTeaching Dataset\n\t\n\nThis dataset contains conversational data for training teaching and instruction-following models.\n\n\t\n\t\t\n\t\tDataset Structure\n\t\n\nThe dataset is provided in JSONL format where each line contains a conversation with multiple turns.\nEach conversation consists of:\n\nrole: Either \"user\" or \"assistant\"\ncontent: List containing the message content with type and text\n\n\n\t\n\t\t\n\t\tExample\n\t\n\n[\n  {\n    \"role\": \"user\", \n    \"content\": [{\"type\": \"text\", \"text\": \"What is 2+2?\"}]\n  }\u2026 See the full description on the dataset page: https://huggingface.co/datasets/drwlf/Teaching-Dataset.",
+      "downloads": 6,
+      "likes": 0,
+      "search_term": "teaching",
+      "tags": [
+        "language:en",
+        "region:us"
+      ],
+      "tutoring_score": 11.006
+    },
+    {
+      "id": "LangAGI-Lab/magpie-reasoning-v1-20k-math-verifiable-step-by-step-rationale",
+      "description": "",
+      "downloads": 6,
+      "likes": 0,
+      "search_term": "step-by-step",
+      "tags": [
+        "size_categories:10K<n<100K",
+        "format:parquet",
+        "modality:tabular",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us"
+      ],
+      "tutoring_score": 11.006
+    },
+    {
+      "id": "interstellarninja/hermes_reasoning_tool_use",
+      "description": "\n\t\n\t\t\n\t\tTL;DR\n\t\n\n51 004 ShareGPT conversations that teach LLMs when, how and whether to call tools.Built with the Nous Research Atropos RL stack in Atropos using a custom MultiTurnToolCallingEnv, and aligned with BFCL v3 evaluation scenarios.Released by @interstellarninja under Apache-2.0.\n\n\n\t\n\t\t\n\t\n\t\n\t\t1\u2002Dataset Highlights\n\t\n\n\n\t\n\t\t\nCount\nSplit\nScenarios covered\nSize\n\n\n\t\t\n51 004\ntrain\nsingle-turn \u00b7 multi-turn \u00b7 multi-step \u00b7 relevance\n392 MB\n\n\n\t\n\n\nEach row: OpenAI-style conversations\u2026 See the full description on the dataset page: https://huggingface.co/datasets/interstellarninja/hermes_reasoning_tool_use.",
+      "downloads": 2001,
+      "likes": 109,
+      "search_term": "reasoning",
+      "tags": [
+        "task_categories:question-answering",
+        "language:en",
+        "license:apache-2.0",
+        "size_categories:10K<n<100K",
+        "format:parquet",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us",
+        "tool-use",
+        "json-mode",
+        "reasoning",
+        "rl"
+      ],
+      "tutoring_score": 11.001
+    },
+    {
+      "id": "bird-of-paradise/transformer-from-scratch-tutorial",
+      "description": "\n\t\n\t\t\n\t\tImplementing Transformer from Scratch: A Step-by-Step Guide\n\t\n\nThis repository provides a detailed guide and implementation of the Transformer architecture from the \"Attention Is All You Need\" paper. The implementation focuses on understanding each component through clear code, comprehensive testing, and visual aids.\nFor implementions of more recent architectural innovations from DeepSeek, see the Related Implementations section.\n\n\t\n\t\t\n\t\n\t\n\t\tQuick Start\n\t\n\nView the complete\u2026 See the full description on the dataset page: https://huggingface.co/datasets/bird-of-paradise/transformer-from-scratch-tutorial.",
+      "downloads": 271,
+      "likes": 20,
+      "search_term": "tutorial",
+      "tags": [
+        "license:mit",
+        "arxiv:1706.03762",
+        "region:us"
+      ],
+      "tutoring_score": 10.271
+    },
+    {
+      "id": "di-zhang-fdu/R1-Vision-Reasoning-Instructions",
+      "description": "\n\t\n\t\t\n\t\tVRI-160K: A dataset for Vision Reasoning Instruction Tuning\n\t\n\n\n\t\n\t\t\n\t\tImages\n\t\n\nImages data can be access from https://huggingface.co/datasets/Xkev/LLaVA-CoT-100k\n\n\t\n\t\t\n\t\tData Source\n\t\n\nRaw data can be access from https://huggingface.co/datasets/di-zhang-fdu/llava-cot-100k-r1-format for GRPO training\n\n\t\n\t\t\n\t\tCitations\n\t\n\n@misc {di_zhang_2025,\n    author       = { {Di Zhang} },\n    title        = { R1-Vision-Reasoning-Instructions (Revision 49c1686) },\n    year         = 2025,\n    url\u2026 See the full description on the dataset page: https://huggingface.co/datasets/di-zhang-fdu/R1-Vision-Reasoning-Instructions.",
+      "downloads": 201,
+      "likes": 29,
+      "search_term": "instruction",
+      "tags": [
+        "size_categories:100K<n<1M",
+        "format:parquet",
+        "modality:text",
+        "library:datasets",
+        "library:dask",
+        "library:mlcroissant",
+        "library:polars",
+        "arxiv:2411.18203",
+        "doi:10.57967/hf/4686",
+        "region:us"
+      ],
+      "tutoring_score": 10.201
+    },
+    {
+      "id": "pbcong/gsm8k_step_by_step",
+      "description": "This dataset is adapted from OpenAI's GSM8K dataset.\nEach solution is structured as a step-by-step reasoning sequence, generated by GPT-4o.\nFormat:<solution>[continuous reasoning process]</solution>Final answer: [groundtruth]\n",
+      "downloads": 15,
+      "likes": 2,
+      "search_term": "step-by-step",
+      "tags": [
+        "language:en",
+        "size_categories:1K<n<10K",
+        "format:parquet",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us"
+      ],
+      "tutoring_score": 9.215
+    },
+    {
+      "id": "LangAGI-Lab/magpie-reasoning-v1-10k-step-by-step-rationale-alpaca-format",
+      "description": "",
+      "downloads": 5,
+      "likes": 1,
+      "search_term": "step-by-step",
+      "tags": [
+        "size_categories:10K<n<100K",
+        "format:parquet",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us"
+      ],
+      "tutoring_score": 9.105
+    },
+    {
+      "id": "KarthikaRajagopal/socratic_teaching_dataset",
+      "description": "",
+      "downloads": 12,
+      "likes": 0,
+      "search_term": "teaching",
+      "tags": [
+        "license:apache-2.0",
+        "size_categories:n<1K",
+        "format:json",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us"
+      ],
+      "tutoring_score": 9.012
+    },
+    {
+      "id": "CreitinGameplays/magpie-reasoning-v1-10k-step-by-step-rationale-alpaca-format-changedtoken",
+      "description": "",
+      "downloads": 5,
+      "likes": 0,
+      "search_term": "step-by-step",
+      "tags": [
+        "license:mit",
+        "size_categories:10K<n<100K",
+        "format:csv",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us"
+      ],
+      "tutoring_score": 9.005
+    },
+    {
+      "id": "LangAGI-Lab/magpie-reasoning-v1-10k-step-by-step-rationale",
+      "description": "",
+      "downloads": 4,
+      "likes": 0,
+      "search_term": "step-by-step",
+      "tags": [
+        "size_categories:10K<n<100K",
+        "format:parquet",
+        "modality:tabular",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us"
+      ],
+      "tutoring_score": 9.004
+    },
+    {
+      "id": "CreitinGameplays/magpie-reasoning-v1-10k-step-by-step-rationale-alpaca-format-changedtoken-mistral",
+      "description": "",
+      "downloads": 4,
+      "likes": 0,
+      "search_term": "step-by-step",
+      "tags": [
+        "license:mit",
+        "size_categories:10K<n<100K",
+        "format:csv",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us"
+      ],
+      "tutoring_score": 9.004
+    },
+    {
+      "id": "CreitinGameplays/magpie-reasoning-v1-10k-step-by-step-rationale-alpaca-format-llama3.1",
+      "description": "",
+      "downloads": 3,
+      "likes": 0,
+      "search_term": "step-by-step",
+      "tags": [
+        "size_categories:10K<n<100K",
+        "format:csv",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us"
+      ],
+      "tutoring_score": 9.003
+    },
+    {
+      "id": "ChristophSchuhmann/basic-math-problems-with-step-by-step-solutions",
+      "description": "",
+      "downloads": 862,
+      "likes": 7,
+      "search_term": "step-by-step",
+      "tags": [
+        "license:apache-2.0",
+        "size_categories:10M<n<100M",
+        "format:parquet",
+        "modality:text",
+        "library:datasets",
+        "library:dask",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us"
+      ],
+      "tutoring_score": 8.562
+    },
+    {
+      "id": "iamtarun/python_code_instructions_18k_alpaca",
+      "description": "\n\t\n\t\t\n\t\tDataset Card for python_code_instructions_18k_alpaca\n\t\n\nThe dataset contains problem descriptions and code in python language.\nThis dataset is taken from sahil2801/code_instructions_120k, which adds a prompt column in alpaca style. Refer to the source here.\n",
+      "downloads": 1765,
+      "likes": 312,
+      "search_term": "instruction",
+      "tags": [
+        "task_categories:question-answering",
+        "task_categories:text-generation",
+        "size_categories:10K<n<100K",
+        "format:parquet",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us",
+        "code"
+      ],
+      "tutoring_score": 7.765
+    },
+    {
+      "id": "Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset",
+      "description": "\n\t\n\t\t\n\t\tTrendyol Cybersecurity Defense Instruction-Tuning Dataset (v2.0)\n\t\n\n\n  \n  \n  \n  \n\n\n\n\t\n\t\t\n\t\t\ud83d\ude80 TL;DR\n\t\n\n53,202 meticulously curated system/user/assistant instruction-tuning examples covering 200+ specialized cybersecurity domains. Built by the Trendyol Security Team for training state-of-the-art defensive security AI assistants. Expanded from 21K to 53K rows with comprehensive coverage of modern security challenges including cloud-native threats, AI/ML security, quantum computing risks\u2026 See the full description on the dataset page: https://huggingface.co/datasets/Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset.",
+      "downloads": 1760,
+      "likes": 35,
+      "search_term": "instruction",
+      "tags": [
+        "task_categories:text-generation",
+        "task_categories:question-answering",
+        "language:en",
+        "license:apache-2.0",
+        "size_categories:10K<n<100K",
+        "format:json",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us",
+        "cybersecurity",
+        "defensive-security",
+        "instruction-tuning",
+        "threat-intelligence",
+        "incident-response",
+        "security-operations"
+      ],
+      "tutoring_score": 7.76
+    },
+    {
+      "id": "ZennyKenny/tactical-military-reasoning-v.1.0",
+      "description": "\n\t\n\t\t\n\t\tTactical Military Reasoning Dataset v1.0\n\t\n\n\nA curated collection of 150 rich tactical military scenarios with LLM-generated reasoning strategies for both attacking and defending forces.\n\n\n \n\n\n\n\n\t\n\t\t\n\t\t\ud83d\udcdd Preface\n\t\n\nOncologists do not study cancer because they love cancer and wish for it to occur more frequently. They study cancer to better understand its causes, progression, and consequences in order to therefore eradicate it from the earth more effectively. A distaste for something\u2026 See the full description on the dataset page: https://huggingface.co/datasets/ZennyKenny/tactical-military-reasoning-v.1.0.",
+      "downloads": 222,
+      "likes": 13,
+      "search_term": "reasoning",
+      "tags": [
+        "task_categories:text-generation",
+        "task_categories:text2text-generation",
+        "task_categories:reinforcement-learning",
+        "language:en",
+        "license:mit",
+        "size_categories:n<1K",
+        "format:parquet",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us",
+        "reasoning-datasets-competition"
+      ],
+      "tutoring_score": 7.522
+    },
+    {
+      "id": "BENVBAI/so100_teaching",
+      "description": "This dataset was created using LeRobot.\n\n\t\n\t\t\n\t\tDataset Structure\n\t\n\nmeta/info.json:\n{\n    \"codebase_version\": \"v2.1\",\n    \"robot_type\": \"so100\",\n    \"total_episodes\": 2,\n    \"total_frames\": 1770,\n    \"total_tasks\": 1,\n    \"total_videos\": 2,\n    \"total_chunks\": 1,\n    \"chunks_size\": 1000,\n    \"fps\": 30,\n    \"splits\": {\n        \"train\": \"0:2\"\n    },\n    \"data_path\": \"data/chunk-{episode_chunk:03d}/episode_{episode_index:06d}.parquet\",\n    \"video_path\":\u2026 See the full description on the dataset page: https://huggingface.co/datasets/BENVBAI/so100_teaching.",
+      "downloads": 5,
+      "likes": 0,
+      "search_term": "teaching",
+      "tags": [
+        "task_categories:robotics",
+        "license:apache-2.0",
+        "size_categories:1K<n<10K",
+        "format:parquet",
+        "modality:tabular",
+        "modality:timeseries",
+        "modality:video",
+        "library:datasets",
+        "library:dask",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us",
+        "LeRobot",
+        "so100",
+        "tutorial"
+      ],
+      "tutoring_score": 7.005
+    },
+    {
+      "id": "ProlificAI/social-reasoning-rlhf",
+      "description": "\n\t\n\t\t\n\t\tDataset Summary\n\t\n\nThis repository provides access to a social reasoning dataset that aims to provide signal to how humans navigate social situations, how they reason about them and how they understand each other. It contains questions probing people's thinking and understanding of various social situations.\nThis dataset was created by collating a set of questions within the following social reasoning tasks:\n\nunderstanding of emotions\nintent recognition\nsocial norms\nsocial\u2026 See the full description on the dataset page: https://huggingface.co/datasets/ProlificAI/social-reasoning-rlhf.",
+      "downloads": 594,
+      "likes": 45,
+      "search_term": "reasoning",
+      "tags": [
+        "task_categories:text-generation",
+        "language:en",
+        "license:mit",
+        "size_categories:1K<n<10K",
+        "format:json",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us",
+        "human-feedback",
+        "rlhf"
+      ],
+      "tutoring_score": 6.594
+    },
+    {
+      "id": "vikp/python_code_instructions_filtered",
+      "description": "\n\t\n\t\t\n\t\tDataset Card for \"code_filtered\"\n\t\n\nThis includes data from xlcost, evol instruct, code alpaca, code instructions, and code search net.  Data is filtered based on quality and learning value. \n",
+      "downloads": 79,
+      "likes": 5,
+      "search_term": "instruction",
+      "tags": [
+        "size_categories:100K<n<1M",
+        "format:parquet",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us"
+      ],
+      "tutoring_score": 6.579
+    },
+    {
+      "id": "SkunkworksAI/reasoning-0.01",
+      "description": "\n\t\n\t\t\n\t\treasoning-0.01 subset\n\t\n\nsynthetic dataset of reasoning chains for a wide variety of tasks.\nwe leverage data like this across multiple reasoning experiments/projects.\nstay tuned for reasoning models and more data.\nThanks to Hive Digital Technologies (https://x.com/HIVEDigitalTech) for their compute support in this project and beyond.\n",
+      "downloads": 442,
+      "likes": 281,
+      "search_term": "reasoning",
+      "tags": [
+        "license:apache-2.0",
+        "size_categories:10K<n<100K",
+        "format:parquet",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us"
+      ],
+      "tutoring_score": 6.442
+    },
+    {
+      "id": "TokenBender/code_instructions_122k_alpaca_style",
+      "description": "",
+      "downloads": 371,
+      "likes": 77,
+      "search_term": "instruction",
+      "tags": [
+        "license:apache-2.0",
+        "size_categories:100K<n<1M",
+        "format:json",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us"
+      ],
+      "tutoring_score": 6.371
+    },
+    {
+      "id": "LinkSoul/Chinese-LLaVA-Vision-Instructions",
+      "description": "\u672c\u6570\u636e\u96c6\u662f\u5bf9\u4e8eLLaVA\u7684\u7ffb\u8bd1\uff0c\u8bf7\u4eceLLaVA dataset\u4e0b\u8f7d\u5bf9\u5e94\u7684\u56fe\u7247\u3002\n\u767e\u5ea6\u7f51\u76d8\u94fe\u63a5: https://pan.baidu.com/s/1-jgINIkW0MxusmJuSif85w?pwd=q62v\n",
+      "downloads": 365,
+      "likes": 58,
+      "search_term": "instruction",
+      "tags": [
+        "language:en",
+        "language:zh",
+        "license:apache-2.0",
+        "size_categories:1M<n<10M",
+        "format:json",
+        "modality:text",
+        "library:datasets",
+        "library:dask",
+        "library:mlcroissant",
+        "region:us"
+      ],
+      "tutoring_score": 6.365
+    },
+    {
+      "id": "R3troR0b/BookNarrative-ReasoningQA",
+      "description": "\n\t\n\t\t\n\t\tDataset Card for BookNarrative-ReasoningQA\n\t\n\nThis dataset card aims to be a base template for new datasets. It has been generated using this raw template.\n\n\t\n\t\t\n\t\tDataset Details\n\t\n\n\n\t\n\t\t\n\t\tDataset Description\n\t\n\nBookNarrative-ReasoningQA is a structured dataset designed to train models in multi-task learning with a focus on structured reasoning and comprehension of book narratives. The dataset is divided into multiple sections, each focusing on different narrative components such as\u2026 See the full description on the dataset page: https://huggingface.co/datasets/R3troR0b/BookNarrative-ReasoningQA.",
+      "downloads": 54,
+      "likes": 3,
+      "search_term": "reasoning",
+      "tags": [
+        "license:mit",
+        "size_categories:n<1K",
+        "format:json",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us"
+      ],
+      "tutoring_score": 6.354
+    },
+    {
+      "id": "iamtarun/code_instructions_120k_alpaca",
+      "description": "\n\t\n\t\t\n\t\tDataset Card for code_instructions_120k_alpaca\n\t\n\nThis dataset is taken from sahil2801/code_instructions_120k, which adds a prompt column in alpaca style. Refer to the original source here. \n",
+      "downloads": 267,
+      "likes": 59,
+      "search_term": "instruction",
+      "tags": [
+        "task_categories:text-generation",
+        "task_categories:question-answering",
+        "size_categories:100K<n<1M",
+        "format:parquet",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "region:us",
+        "code"
+      ],
+      "tutoring_score": 6.267
+    },
+    {
+      "id": "NousResearch/eval-Hermes-4-405B-reasoning",
+      "description": "\n\t\n\t\t\n\t\t405b-e3-40k-reasoning Evaluation Results\n\t\n\n\n\t\n\t\t\n\t\tSummary\n\t\n\n\n\t\n\t\t\nBenchmark\nScore\nMetric\nSamples\nOverlong rate\n\n\n\t\t\naime24\n0.819\nmath_pass@1:64_samples\n64\n5.6%\n\n\naime25\n0.781\nmath_pass@1:64_samples\n64\n5.3%\n\n\narenahard\n0.937\neval/overall_winrate\n500\n0.0%\n\n\nbbh_generative\n0.863\nextractive_match\n1\n4.7%\n\n\ncreative-writing-v3\n0.793\ncreative_writing_score\n96\n0.0%\n\n\ndrop_generative_nous\n0.835\ndrop_acc\n1\n1.6%\n\n\neqbench3\n0.855\neqbench_score\n135\n0.0%\n\n\ngpqa_diamond\n0.706\u2026 See the full description on the dataset page: https://huggingface.co/datasets/NousResearch/eval-Hermes-4-405B-reasoning.",
+      "downloads": 7,
+      "likes": 2,
+      "search_term": "reasoning",
+      "tags": [
+        "language:en",
+        "size_categories:100K<n<1M",
+        "modality:tabular",
+        "modality:text",
+        "region:us",
+        "evaluation",
+        "benchmarks"
+      ],
+      "tutoring_score": 6.207
+    }
+  ],
+  "recommendations": {
+    "high_priority": [
+      {
+        "id": "Eedi/Question-Anchored-Tutoring-Dialogues-2k",
+        "score": 14.332999999999998,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "Josephgflowers/OpenOrca-Step-by-step-reasoning",
+        "score": 14.258999999999999,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "Rhombus18/53M-Token-Instruction-Code-QA-Dataset",
+        "score": 14.115,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "FreedomIntelligence/medical-o1-reasoning-SFT",
+        "score": 13,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "LangAGI-Lab/magpie-reasoning-v1-20k-math-verifiable-step-by-step-rationale-alpaca-format",
+        "score": 11.302999999999999,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "drwlf/Teaching-Dataset",
+        "score": 11.006,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "LangAGI-Lab/magpie-reasoning-v1-20k-math-verifiable-step-by-step-rationale",
+        "score": 11.006,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "interstellarninja/hermes_reasoning_tool_use",
+        "score": 11.001,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "bird-of-paradise/transformer-from-scratch-tutorial",
+        "score": 10.271,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "di-zhang-fdu/R1-Vision-Reasoning-Instructions",
+        "score": 10.201,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "pbcong/gsm8k_step_by_step",
+        "score": 9.215,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "LangAGI-Lab/magpie-reasoning-v1-10k-step-by-step-rationale-alpaca-format",
+        "score": 9.105,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "KarthikaRajagopal/socratic_teaching_dataset",
+        "score": 9.012,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "CreitinGameplays/magpie-reasoning-v1-10k-step-by-step-rationale-alpaca-format-changedtoken",
+        "score": 9.005,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "LangAGI-Lab/magpie-reasoning-v1-10k-step-by-step-rationale",
+        "score": 9.004,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "CreitinGameplays/magpie-reasoning-v1-10k-step-by-step-rationale-alpaca-format-changedtoken-mistral",
+        "score": 9.004,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "CreitinGameplays/magpie-reasoning-v1-10k-step-by-step-rationale-alpaca-format-llama3.1",
+        "score": 9.003,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      },
+      {
+        "id": "ChristophSchuhmann/basic-math-problems-with-step-by-step-solutions",
+        "score": 8.562,
+        "reason": "High tutoring relevance with instruction/dialogue focus"
+      }
+    ],
+    "medium_priority": [
+      {
+        "id": "iamtarun/python_code_instructions_18k_alpaca",
+        "score": 7.765,
+        "reason": "Good tutoring potential with educational content"
+      },
+      {
+        "id": "Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset",
+        "score": 7.76,
+        "reason": "Good tutoring potential with educational content"
+      },
+      {
+        "id": "ZennyKenny/tactical-military-reasoning-v.1.0",
+        "score": 7.522,
+        "reason": "Good tutoring potential with educational content"
+      },
+      {
+        "id": "BENVBAI/so100_teaching",
+        "score": 7.005,
+        "reason": "Good tutoring potential with educational content"
+      },
+      {
+        "id": "ProlificAI/social-reasoning-rlhf",
+        "score": 6.594,
+        "reason": "Good tutoring potential with educational content"
+      },
+      {
+        "id": "vikp/python_code_instructions_filtered",
+        "score": 6.579,
+        "reason": "Good tutoring potential with educational content"
+      },
+      {
+        "id": "SkunkworksAI/reasoning-0.01",
+        "score": 6.442,
+        "reason": "Good tutoring potential with educational content"
+      },
+      {
+        "id": "TokenBender/code_instructions_122k_alpaca_style",
+        "score": 6.371,
+        "reason": "Good tutoring potential with educational content"
+      },
+      {
+        "id": "LinkSoul/Chinese-LLaVA-Vision-Instructions",
+        "score": 6.365,
+        "reason": "Good tutoring potential with educational content"
+      },
+      {
+        "id": "R3troR0b/BookNarrative-ReasoningQA",
+        "score": 6.354,
+        "reason": "Good tutoring potential with educational content"
+      },
+      {
+        "id": "iamtarun/code_instructions_120k_alpaca",
+        "score": 6.267,
+        "reason": "Good tutoring potential with educational content"
+      },
+      {
+        "id": "NousResearch/eval-Hermes-4-405B-reasoning",
+        "score": 6.207,
+        "reason": "Good tutoring potential with educational content"
+      }
+    ],
+    "specialized": {
+      "mathematics": [
+        "Eedi/Question-Anchored-Tutoring-Dialogues-2k",
+        "Rhombus18/53M-Token-Instruction-Code-QA-Dataset",
+        "LangAGI-Lab/magpie-reasoning-v1-20k-math-verifiable-step-by-step-rationale-alpaca-format",
+        "LangAGI-Lab/magpie-reasoning-v1-20k-math-verifiable-step-by-step-rationale",
+        "ChristophSchuhmann/basic-math-problems-with-step-by-step-solutions",
+        "NousResearch/eval-Hermes-4-405B-reasoning"
+      ],
+      "english": [
+        "NousResearch/eval-Hermes-4-405B-reasoning"
+      ]
+    }
+  },
+  "research_date": "2025-08-29 08:13:42"
+}

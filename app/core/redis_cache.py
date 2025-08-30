@@ -75,7 +75,13 @@ class RedisCache:
 			)
 			self.client.ping()  # type: ignore[call-arg]
 		except Exception as e:  # pragma: no cover (network)
-			raise RedisCacheError(f"Redis connection failed: {e}")
+			# Instead of raising (which surfaces in user flow), convert this instance into a null no-op.
+			from typing import Any as _Any
+			print(f"[redis_cache] WARNING: Redis connection failed: {e}. Switching to no-op cache instance.")
+			class _Noop:
+				def __getattr__(self, _name: str) -> _Any:  # return a lambda that does nothing
+					return lambda *a, **k: None
+			self.client = _Noop()
 
 	# Internal helpers -------------------------------------------------
 	def _ns_key(self, namespace: str, key: str, hashed: bool = True) -> str:
@@ -148,15 +154,58 @@ class RedisCache:
 _global_cache: Optional[RedisCache] = None
 
 
-def _global() -> RedisCache:
+class _NullRedisCache:
+	"""No-op stand‑in when real Redis is unavailable.
+
+	Provides the subset of methods used by the functional helpers so higher layers
+	can continue operating without branching. All getters return None; setters publish nothing.
+	"""
+
+	def set_json(self, *_, **__):
+		return None
+
+	def get_json(self, *_, **__):  # noqa: D401
+		return None
+
+	def set_msgpack(self, *_, **__):
+		return None
+
+	def get_msgpack(self, *_, **__):
+		return None
+
+	def delete(self, *_, **__):
+		return None
+
+	def cache_rag_query_result(self, *_, **__):
+		return None
+
+	def get_cached_rag_query(self, *_, **__):
+		return None
+
+	def publish_build_update(self, *_, **__):
+		return None
+
+
+from typing import Any as _Any
+
+
+def _global() -> _Any:
 	global _global_cache
 	if _global_cache is None:
+		disable = os.getenv("DISABLE_REDIS", "0").lower() in {"1", "true", "yes"}
+		if disable:
+			_global_cache = _NullRedisCache()  # type: ignore
+			return _global_cache
 		try:
 			_global_cache = RedisCache()
-		except RedisCacheError:
-			# Defer raising until use; reattempt each call
-			raise
-	return _global_cache
+		except RedisCacheError as e:
+			# Log once, then substitute null cache so callers never raise.
+			try:
+				print(f"[redis_cache] WARNING: {e}. Using null in-memory no-op cache.")
+			except Exception:
+				pass
+			_global_cache = _NullRedisCache()  # type: ignore
+	return _global_cache  # type: ignore
 
 
 # Backward-Compatible Functional API ---------------------------------------

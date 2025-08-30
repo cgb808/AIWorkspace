@@ -15,6 +15,7 @@ from typing import List, Any, Dict
 import os
 import time
 import psycopg2  # type: ignore
+import logging
 
 from .feature_assembler import assemble_features, Candidate, FEATURE_SCHEMA_VERSION
 from .ltr import GLOBAL_LTR_MODEL
@@ -114,10 +115,16 @@ def _similarity_search_pgvector(query_vec: List[float], k: int) -> List[Candidat
         LIMIT %s
         """
     )
-    with _pg_connect() as conn:
-        with conn.cursor() as cur:
-            cur.execute(sql, (query_vec, query_vec, k))
-            rows = cur.fetchall()
+    try:
+        with _pg_connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, (query_vec, query_vec, k))
+                rows = cur.fetchall()
+    except Exception as e:  # graceful degradation
+        logging.getLogger(__name__).warning(
+            "retrieval_failed", extra={"event": "retrieval", "error": str(e)}
+        )
+        return []
     cands: List[Candidate] = []
     for r in rows:
         cands.append(
@@ -152,7 +159,10 @@ async def rag_query2(payload: Query2Payload) -> Dict[str, Any]:
     cur_w_ltr, cur_w_concept, cur_w_version = get_current_fusion_weights()
 
     # Full response cache (only valid if weights unchanged)
-    cached = get_cached_rag_query(q, top_k)
+    try:
+        cached = get_cached_rag_query(q, top_k)
+    except Exception:
+        cached = None  # Redis unavailable; proceed without cache
     if cached:
         fw = cached.get("fusion_weights") if isinstance(cached, dict) else None
         cached_version = cached.get("fusion_weights_version") if isinstance(cached, dict) else None
@@ -183,7 +193,17 @@ async def rag_query2(payload: Query2Payload) -> Dict[str, Any]:
     embed_start = feature_start = ltr_start = fusion_start = None  # markers
     embed_ms = retrieve_ms = feature_ms = ltr_ms = fusion_ms = 0.0
     cache_hit_type = "none"
-    if cached_features:
+    retrieval_mode = os.getenv("RAG_RETRIEVAL_MODE", "pgvector").lower()
+    if retrieval_mode == "disabled":
+        # Skip embedding + retrieval entirely (dev mode)
+        feature_names = ["concept_score_placeholder"]
+        feature_matrix = []
+        ltr_scores = []
+        distances = []
+        chunk_ids = []
+        texts = []
+        cache_hit_type = "disabled"
+    elif cached_features:
         feature_names = cached_features.get("feature_names", [])
         raw_items = cached_features.get("items", [])
         candidates = []  # not needed for fusion recompute
@@ -315,5 +335,8 @@ async def rag_query2(payload: Query2Payload) -> Dict[str, Any]:
         },
         "retrieval_mode": os.getenv("RAG_RETRIEVAL_MODE", "pgvector").lower(),
     }
-    cache_rag_query_result(q, top_k, response)
+    try:
+        cache_rag_query_result(q, top_k, response)
+    except Exception:
+        pass  # ignore cache store errors
     return response

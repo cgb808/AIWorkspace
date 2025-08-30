@@ -1,6 +1,31 @@
-# MCP Memory ↔ RAG Integration
+# MCP Memory ↔ RAG Integration + Specialized Models
 
-Goal: Leverage the MCP `server-memory` storage file as a continuously ingested semantic knowledge base powering RAG queries and contextual generation.
+Goal: Leverage the MCP `server-memory` storage file as a continuously ingested semantic knowledge base powering RAG queries and contextual generation for specialized AI models.
+
+## Architecture: Specialized Models + RAG Context
+
+**Key Principle**: Specialized models provide expert interaction patterns, while RAG provides contextual domain knowledge.
+
+```mermaid
+graph TB
+    Memory[MCP Memory File] --> Bridge[Memory RAG Bridge]
+    Bridge --> Vector[pgvector Store]
+    
+    User[User Query] --> Router[Model Router]
+    Router --> Specialist{Specialist Selection}
+    
+    Specialist -->|Socratic| SocMod[Socratic Tutor]
+    Specialist -->|Drill-Down| DrillMod[Drill-Down Expert]
+    Specialist -->|Interruption| IntMod[Interruption Handler]
+    
+    SocMod --> RAG[RAG Context Retrieval]
+    DrillMod --> RAG
+    IntMod --> RAG
+    
+    RAG --> Vector
+    Vector --> Context[Domain Context]
+    Context --> Response[Specialized Response]
+```
 
 ## Components
 | Component | Purpose |
@@ -8,17 +33,22 @@ Goal: Leverage the MCP `server-memory` storage file as a continuously ingested s
 | `@modelcontextprotocol/server-memory` | Produces JSONL memory file (append-only). |
 | `memory_rag_bridge.py` | Tails memory file, embeds new lines, stores vectors in Postgres. |
 | `doc_embeddings` (pgvector) | Unified semantic store (source='memory' rows). |
-| FastAPI `/rag/query` (planned) | Retrieves + composes context for LLM generation. |
+| **Specialized Models** | Domain expert interaction patterns (Socratic, drill-down, interruption). |
+| FastAPI `/rag/query` | Retrieves + composes context for specialist model generation. |
 
-## Data Flow
+## Data Flow: Memory → RAG → Specialists
 1. User / agents write conversational or event entries → memory server appends JSON object per line.
 2. Bridge script polls file tail, extracts text, deduplicates via SHA-256 hash.
 3. Text batch embedded via `EMBED_ENDPOINT` (FastAPI /model/embed).
 4. Embeddings inserted into `doc_embeddings` with `source='memory'` and hash recorded in `memory_ingest_dedup`.
-5. RAG queries include memory-derived context using similarity on `source='memory'` (or union with other sources).
+5. **Specialist model selected** based on interaction type (Socratic tutoring, drill-down questioning, etc.).
+6. **RAG provides contextual knowledge** to specialist via similarity search on relevant domain content.
+7. **Specialist generates response** using both its trained interaction patterns AND retrieved context.
 
 ```
-Memory JSONL --> memory_rag_bridge --> embeddings --> pgvector(doc_embeddings) --> RAG retrieval --> LLM
+Memory JSONL --> memory_rag_bridge --> embeddings --> pgvector(doc_embeddings) 
+                                                           ↓
+User Query --> Specialist Selection --> RAG Context Retrieval --> Specialist Model --> Contextual Expert Response
 ```
 
 ## Setup

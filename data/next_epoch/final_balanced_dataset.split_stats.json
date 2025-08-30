@@ -1,0 +1,28 @@
+{
+  "total_examples": 1842,
+  "train_examples": 1659,
+  "val_examples": 183,
+  "val_ratio": 0.0993485342019544,
+  "role_splits": {
+    "general_assistant": {
+      "train": 963,
+      "val": 106,
+      "total": 1069
+    },
+    "family_tutor": {
+      "train": 261,
+      "val": 29,
+      "total": 290
+    },
+    "philosophical_guide": {
+      "train": 174,
+      "val": 19,
+      "total": 193
+    },
+    "educational_expert": {
+      "train": 261,
+      "val": 29,
+      "total": 290
+    }
+  }
+}

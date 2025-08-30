@@ -1,0 +1,8 @@
+{
+  "total_examples": 1188,
+  "gsm8k_examples": 1000,
+  "socratic_examples": 188,
+  "output_file": "data/tutoring_instructional/combined_tutoring_dataset.jsonl",
+  "format": "instructional_tutoring",
+  "ready_for_calculative_training": true
+}

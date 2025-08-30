@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "generated": "2025-08-29T00:00:00Z",
+  "purpose": "Next epoch (Jarvis) child communication / empathy / persona / cue detection sources",
+  "sources": [
+    {"key": "empathetic_dialogues", "hf_dataset": "empathetic_dialogues", "license": "CC BY-NC 4.0", "category": "emotion_dialogue", "notes": "Emotion-labelled multi-turn dialogues"},
+    {"key": "daily_dialog", "hf_dataset": "daily_dialog", "license": "CC BY-NC 4.0", "category": "general_dialogue", "notes": "Dialogue with emotion + act labels"},
+    {"key": "blended_skill_talk", "hf_dataset": "blended_skill_talk", "license": "CC BY 4.0", "category": "blended_skills", "notes": "Persona + empathy + knowledge blending"},
+    {"key": "go_emotions", "hf_dataset": "go_emotions", "license": "CC BY 4.0", "category": "emotion_classification", "notes": "27 emotion classes + neutral"},
+    {"key": "social_i_qa", "hf_dataset": "social_i_qa", "license": "MIT", "category": "social_reasoning", "notes": "Social commonsense QA"},
+    {"key": "commonsense_qa", "hf_dataset": "commonsense_qa", "license": "MIT", "category": "commonsense", "notes": "Multiple-choice commonsense reasoning"},
+    {"key": "persona_chat", "hf_dataset": "persona_chat", "license": "CC BY-NC 4.0", "category": "persona_dialogue", "notes": "Persona grounded dialogue"},
+    {"key": "coqa", "hf_dataset": "coqa", "license": "MIT", "category": "narrative_qa", "notes": "Conversational QA dataset"},
+    {"key": "gsm8k", "hf_dataset": "gsm8k", "license": "Apache-2.0", "category": "math_reasoning", "notes": "Grade school math reasoning"},
+    {"key": "squad", "hf_dataset": "squad", "license": "CC BY-SA 4.0", "category": "reading_comp", "notes": "Span QA (will simplify answers)"},
+    {"key": "sciq", "hf_dataset": "sciq", "license": "Apache-2.0", "category": "science_qa", "notes": "Science MCQ; will convert to instruction format"},
+    {"key": "child_simplification_synthetic", "hf_dataset": null, "license": "synthetic", "category": "simplification", "notes": "Generated simplifications of complex answers at age bands"},
+    {"key": "jeeves_persona_synthetic", "hf_dataset": null, "license": "synthetic", "category": "persona_style", "notes": "Jeeves persona synthetic replies (dry British valet)"},
+    {"key": "cue_contrast_pairs", "hf_dataset": null, "license": "synthetic", "category": "cue_adaptation", "notes": "Contrasting proper vs improper adaptive responses"}
+  ]
+}

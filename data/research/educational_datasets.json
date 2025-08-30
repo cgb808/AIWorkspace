@@ -1,0 +1,365 @@
+{
+  "science": [
+    {
+      "id": "zeroshot/arxiv-biology",
+      "url": "https://huggingface.co/datasets/zeroshot/arxiv-biology",
+      "downloads": 129,
+      "likes": 13,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "abhi26/dpo-scientific-reasoning",
+      "url": "https://huggingface.co/datasets/abhi26/dpo-scientific-reasoning",
+      "downloads": 122,
+      "likes": 0,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "abhi26/openpipe-dpo-scientific-reasoning",
+      "url": "https://huggingface.co/datasets/abhi26/openpipe-dpo-scientific-reasoning",
+      "downloads": 111,
+      "likes": 0,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "abhi26/openpipe-chat-complete-scientific-reasoning",
+      "url": "https://huggingface.co/datasets/abhi26/openpipe-chat-complete-scientific-reasoning",
+      "downloads": 101,
+      "likes": 0,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "LLMTeamAkiyama/cleand_moremilk_CoT_Reasoning_Scientific_Discovery_and_Research",
+      "url": "https://huggingface.co/datasets/LLMTeamAkiyama/cleand_moremilk_CoT_Reasoning_Scientific_Discovery_and_Research",
+      "downloads": 91,
+      "likes": 0,
+      "estimated_quality": "medium"
+    }
+  ],
+  "mathematics": [
+    {
+      "id": "microsoft/orca-math-word-problems-200k",
+      "url": "https://huggingface.co/datasets/microsoft/orca-math-word-problems-200k",
+      "downloads": 1733,
+      "likes": 458,
+      "estimated_quality": "high"
+    },
+    {
+      "id": "nanote/algebra_misconceptions",
+      "url": "https://huggingface.co/datasets/nanote/algebra_misconceptions",
+      "downloads": 971,
+      "likes": 5,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "joey234/mmlu-abstract_algebra",
+      "url": "https://huggingface.co/datasets/joey234/mmlu-abstract_algebra",
+      "downloads": 443,
+      "likes": 2,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "commoncrawl/statistics",
+      "url": "https://huggingface.co/datasets/commoncrawl/statistics",
+      "downloads": 178,
+      "likes": 22,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "MARIO-Math-Reasoning/AlphaMath-Trainset",
+      "url": "https://huggingface.co/datasets/MARIO-Math-Reasoning/AlphaMath-Trainset",
+      "downloads": 91,
+      "likes": 15,
+      "estimated_quality": "medium"
+    }
+  ],
+  "english": [
+    {
+      "id": "euclaise/writingprompts",
+      "url": "https://huggingface.co/datasets/euclaise/writingprompts",
+      "downloads": 1169,
+      "likes": 40,
+      "estimated_quality": "high"
+    },
+    {
+      "id": "lionelchg/dolly_creative_writing",
+      "url": "https://huggingface.co/datasets/lionelchg/dolly_creative_writing",
+      "downloads": 396,
+      "likes": 6,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "RNDRandoM/paul-graham-essays-qa",
+      "url": "https://huggingface.co/datasets/RNDRandoM/paul-graham-essays-qa",
+      "downloads": 354,
+      "likes": 1,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "Gryphe/Opus-WritingPrompts",
+      "url": "https://huggingface.co/datasets/Gryphe/Opus-WritingPrompts",
+      "downloads": 157,
+      "likes": 69,
+      "estimated_quality": "high"
+    },
+    {
+      "id": "IMA-Taiwan/taigi-literature-ots",
+      "url": "https://huggingface.co/datasets/IMA-Taiwan/taigi-literature-ots",
+      "downloads": 64,
+      "likes": 3,
+      "estimated_quality": "medium"
+    }
+  ],
+  "history": [
+    {
+      "id": "joey234/mmlu-high_school_world_history-neg",
+      "url": "https://huggingface.co/datasets/joey234/mmlu-high_school_world_history-neg",
+      "downloads": 9,
+      "likes": 1,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "Programmer-RD-AI/restaurant-reviews-timelines",
+      "url": "https://huggingface.co/datasets/Programmer-RD-AI/restaurant-reviews-timelines",
+      "downloads": 8,
+      "likes": 2,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "joey234/mmlu-high_school_world_history-neg-prepend",
+      "url": "https://huggingface.co/datasets/joey234/mmlu-high_school_world_history-neg-prepend",
+      "downloads": 4,
+      "likes": 1,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "joey234/mmlu-high_school_world_history-original-neg",
+      "url": "https://huggingface.co/datasets/joey234/mmlu-high_school_world_history-original-neg",
+      "downloads": 5,
+      "likes": 0,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "joey234/mmlu-high_school_world_history",
+      "url": "https://huggingface.co/datasets/joey234/mmlu-high_school_world_history",
+      "downloads": 4,
+      "likes": 1,
+      "estimated_quality": "medium"
+    }
+  ],
+  "geography": [
+    {
+      "id": "wdcqc/starcraft-remastered-melee-maps",
+      "url": "https://huggingface.co/datasets/wdcqc/starcraft-remastered-melee-maps",
+      "downloads": 832,
+      "likes": 2,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "m-a-p/SciMMIR",
+      "url": "https://huggingface.co/datasets/m-a-p/SciMMIR",
+      "downloads": 420,
+      "likes": 9,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "MAPS-research/GEMRec-PromptBook",
+      "url": "https://huggingface.co/datasets/MAPS-research/GEMRec-PromptBook",
+      "downloads": 186,
+      "likes": 3,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "electricsheepafrica/Climate-Change-Indicators-For-African-Countries",
+      "url": "https://huggingface.co/datasets/electricsheepafrica/Climate-Change-Indicators-For-African-Countries",
+      "downloads": 31,
+      "likes": 0,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "m-a-p/SMuPT_v0_8192_770M",
+      "url": "https://huggingface.co/datasets/m-a-p/SMuPT_v0_8192_770M",
+      "downloads": 30,
+      "likes": 0,
+      "estimated_quality": "medium"
+    }
+  ],
+  "civics": [
+    {
+      "id": "nisaar/Articles_Constitution_3300_Instruction_Set",
+      "url": "https://huggingface.co/datasets/nisaar/Articles_Constitution_3300_Instruction_Set",
+      "downloads": 142,
+      "likes": 6,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "sovai/government_contracts",
+      "url": "https://huggingface.co/datasets/sovai/government_contracts",
+      "downloads": 27,
+      "likes": 1,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "ducut91/korean-constitutional-court-decisions",
+      "url": "https://huggingface.co/datasets/ducut91/korean-constitutional-court-decisions",
+      "downloads": 23,
+      "likes": 1,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "Lots-of-LoRAs/task704_mmmlu_answer_generation_high_school_government_and_politics",
+      "url": "https://huggingface.co/datasets/Lots-of-LoRAs/task704_mmmlu_answer_generation_high_school_government_and_politics",
+      "downloads": 19,
+      "likes": 0,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "joey234/mmlu-high_school_government_and_politics-neg",
+      "url": "https://huggingface.co/datasets/joey234/mmlu-high_school_government_and_politics-neg",
+      "downloads": 10,
+      "likes": 2,
+      "estimated_quality": "medium"
+    }
+  ],
+  "health": [
+    {
+      "id": "openfoodfacts/nutrition-table-detection",
+      "url": "https://huggingface.co/datasets/openfoodfacts/nutrition-table-detection",
+      "downloads": 323,
+      "likes": 3,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "dynamoai/dynamoai-benchmark-safety",
+      "url": "https://huggingface.co/datasets/dynamoai/dynamoai-benchmark-safety",
+      "downloads": 222,
+      "likes": 4,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "openlifescienceai/mmlu_anatomy",
+      "url": "https://huggingface.co/datasets/openlifescienceai/mmlu_anatomy",
+      "downloads": 57,
+      "likes": 1,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "joey234/mmlu-nutrition-neg",
+      "url": "https://huggingface.co/datasets/joey234/mmlu-nutrition-neg",
+      "downloads": 45,
+      "likes": 2,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "Lots-of-LoRAs/task725_mmmlu_answer_generation_nutrition",
+      "url": "https://huggingface.co/datasets/Lots-of-LoRAs/task725_mmmlu_answer_generation_nutrition",
+      "downloads": 32,
+      "likes": 0,
+      "estimated_quality": "medium"
+    }
+  ],
+  "computer_science": [
+    {
+      "id": "alvarobartt/openhermes-preferences-coding",
+      "url": "https://huggingface.co/datasets/alvarobartt/openhermes-preferences-coding",
+      "downloads": 64,
+      "likes": 3,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "theblackcat102/multiround-programming-convo",
+      "url": "https://huggingface.co/datasets/theblackcat102/multiround-programming-convo",
+      "downloads": 28,
+      "likes": 8,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "infinite-dataset-hub/ProgrammingEnthusiastsDB",
+      "url": "https://huggingface.co/datasets/infinite-dataset-hub/ProgrammingEnthusiastsDB",
+      "downloads": 6,
+      "likes": 0,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "BurakkTalha/programming-languages-and-frameworks-alpaca",
+      "url": "https://huggingface.co/datasets/BurakkTalha/programming-languages-and-frameworks-alpaca",
+      "downloads": 3,
+      "likes": 0,
+      "estimated_quality": "medium"
+    }
+  ],
+  "critical_thinking": [
+    {
+      "id": "multimodal-reasoning-lab/Zebra-CoT",
+      "url": "https://huggingface.co/datasets/multimodal-reasoning-lab/Zebra-CoT",
+      "downloads": 16334,
+      "likes": 47,
+      "estimated_quality": "high"
+    },
+    {
+      "id": "reasoning-machines/gsm-hard",
+      "url": "https://huggingface.co/datasets/reasoning-machines/gsm-hard",
+      "downloads": 4135,
+      "likes": 55,
+      "estimated_quality": "high"
+    },
+    {
+      "id": "interstellarninja/hermes_reasoning_tool_use",
+      "url": "https://huggingface.co/datasets/interstellarninja/hermes_reasoning_tool_use",
+      "downloads": 2001,
+      "likes": 109,
+      "estimated_quality": "high"
+    },
+    {
+      "id": "datatune/LogiCoT",
+      "url": "https://huggingface.co/datasets/datatune/LogiCoT",
+      "downloads": 52,
+      "likes": 61,
+      "estimated_quality": "high"
+    },
+    {
+      "id": "KK04/LogicInference_OA",
+      "url": "https://huggingface.co/datasets/KK04/LogicInference_OA",
+      "downloads": 53,
+      "likes": 18,
+      "estimated_quality": "medium"
+    }
+  ],
+  "test_prep": [
+    {
+      "id": "dmayhem93/agieval-sat-en",
+      "url": "https://huggingface.co/datasets/dmayhem93/agieval-sat-en",
+      "downloads": 511,
+      "likes": 3,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "dmayhem93/agieval-sat-en-without-passage",
+      "url": "https://huggingface.co/datasets/dmayhem93/agieval-sat-en-without-passage",
+      "downloads": 511,
+      "likes": 0,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "jonathan-roberts1/SATIN",
+      "url": "https://huggingface.co/datasets/jonathan-roberts1/SATIN",
+      "downloads": 86,
+      "likes": 8,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "dmayhem93/agieval-sat-math",
+      "url": "https://huggingface.co/datasets/dmayhem93/agieval-sat-math",
+      "downloads": 75,
+      "likes": 13,
+      "estimated_quality": "medium"
+    },
+    {
+      "id": "climatebert/climate_commitments_actions",
+      "url": "https://huggingface.co/datasets/climatebert/climate_commitments_actions",
+      "downloads": 49,
+      "likes": 7,
+      "estimated_quality": "medium"
+    }
+  ]
+}

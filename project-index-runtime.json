@@ -1,0 +1,240 @@
+{
+  "generated_at": "2025-08-29T23:40:09Z",
+  "python_version": "3.13.3",
+  "module_count": 40,
+  "modules": [
+    {
+      "module": "app/personas.py",
+      "hash": "c1bab94f848e",
+      "loc": 41
+    },
+    {
+      "module": "app/__init__.py",
+      "hash": "4aadbc662354",
+      "loc": 4
+    },
+    {
+      "module": "app/main.py",
+      "hash": "77db63356b0d",
+      "loc": 266
+    },
+    {
+      "module": "app/core/secrets.py",
+      "hash": "3c4e62467527",
+      "loc": 85
+    },
+    {
+      "module": "app/core/redis_cache.py",
+      "hash": "f8676d0f7b4b",
+      "loc": 243
+    },
+    {
+      "module": "app/core/config.py",
+      "hash": "772a88303354",
+      "loc": 111
+    },
+    {
+      "module": "app/core/log_buffer.py",
+      "hash": "3ab2dbd6f83f",
+      "loc": 78
+    },
+    {
+      "module": "app/core/metrics_router.py",
+      "hash": "d7eb5707e421",
+      "loc": 184
+    },
+    {
+      "module": "app/core/metrics.py",
+      "hash": "dd74c1284652",
+      "loc": 80
+    },
+    {
+      "module": "app/core/diagnostics_router.py",
+      "hash": "1525fa24d052",
+      "loc": 89
+    },
+    {
+      "module": "app/core/logging.py",
+      "hash": "fc6cb7a0f3dd",
+      "loc": 94
+    },
+    {
+      "module": "app/gateway/gateway_app.py",
+      "hash": "f80829d52c78",
+      "loc": 115
+    },
+    {
+      "module": "app/gateway/__init__.py",
+      "hash": "e3b0c44298fc",
+      "loc": 1
+    },
+    {
+      "module": "app/rag/embedder.py",
+      "hash": "fee572b42c65",
+      "loc": 36
+    },
+    {
+      "module": "app/rag/db_client.py",
+      "hash": "ff45e9e22791",
+      "loc": 93
+    },
+    {
+      "module": "app/rag/edge_llm.py",
+      "hash": "45b563cc91cb",
+      "loc": 49
+    },
+    {
+      "module": "app/rag/ltr.py",
+      "hash": "d1308c8c2211",
+      "loc": 41
+    },
+    {
+      "module": "app/rag/embed_router.py",
+      "hash": "b2790d28b6e2",
+      "loc": 65
+    },
+    {
+      "module": "app/rag/schemas.py",
+      "hash": "cee6735c3052",
+      "loc": 20
+    },
+    {
+      "module": "app/rag/streaming_router.py",
+      "hash": "eda5e6b5122f",
+      "loc": 286
+    },
+    {
+      "module": "app/rag/store_pg.py",
+      "hash": "555643da3667",
+      "loc": 7
+    },
+    {
+      "module": "app/rag/retrieval.py",
+      "hash": "23a8d01384ca",
+      "loc": 27
+    },
+    {
+      "module": "app/rag/feature_assembler.py",
+      "hash": "299cdc61ab6f",
+      "loc": 61
+    },
+    {
+      "module": "app/rag/ranking_router.py",
+      "hash": "ea2b7ccee701",
+      "loc": 343
+    },
+    {
+      "module": "app/rag/llm_probe_router.py",
+      "hash": "b85ad56015ba",
+      "loc": 80
+    },
+    {
+      "module": "app/rag/embeddings.py",
+      "hash": "1a81ebee93ba",
+      "loc": 17
+    },
+    {
+      "module": "app/rag/llm_client.py",
+      "hash": "9f9a77e9727d",
+      "loc": 503
+    },
+    {
+      "module": "app/rag/pipeline.py",
+      "hash": "37499f81633d",
+      "loc": 95
+    },
+    {
+      "module": "app/leonardo/__init__.py",
+      "hash": "fd179bfbd0eb",
+      "loc": 9
+    },
+    {
+      "module": "app/leonardo/audio_router.py",
+      "hash": "94ff60b9777b",
+      "loc": 293
+    },
+    {
+      "module": "app/audio/transcription_router.py",
+      "hash": "8af75b0c2a35",
+      "loc": 51
+    },
+    {
+      "module": "app/audio/wake_router.py",
+      "hash": "ee047dc079fb",
+      "loc": 122
+    },
+    {
+      "module": "app/audio/speaker_router.py",
+      "hash": "fc938e5d705d",
+      "loc": 193
+    },
+    {
+      "module": "app/audio/xtts_router.py",
+      "hash": "500a39c3d557",
+      "loc": 90
+    },
+    {
+      "module": "app/audio/tts_router.py",
+      "hash": "c3ac94a0bed2",
+      "loc": 83
+    },
+    {
+      "module": "app/metrics/metrics_router.py",
+      "hash": "72e478c7cf95",
+      "loc": 80
+    },
+    {
+      "module": "app/metrics/__init__.py",
+      "hash": "cd44694a1aab",
+      "loc": 8
+    },
+    {
+      "module": "app/health/health_router.py",
+      "hash": "b275eb160553",
+      "loc": 208
+    },
+    {
+      "module": "app/health/system_metrics.py",
+      "hash": "aed8954ecd2f",
+      "loc": 124
+    },
+    {
+      "module": "app/health/__init__.py",
+      "hash": "919807d1ea95",
+      "loc": 7
+    }
+  ],
+  "diff": {
+    "added": [],
+    "removed": [],
+    "changed": [],
+    "previous_module_count": 40
+  },
+  "excludes": [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "archive",
+    "node_modules"
+  ],
+  "models": [
+    {
+      "name": "gemma:2b",
+      "family": "gemma",
+      "quant": "q4_0",
+      "context_len": 8192,
+      "role": "generation",
+      "loaded": true,
+      "throughput_tps": 35.0
+    },
+    {
+      "name": "bge-small",
+      "family": "bge",
+      "quant": "fp16",
+      "context_len": 1024,
+      "role": "embedding",
+      "loaded": false,
+      "throughput_tps": 120.0
+    }
+  ]
+}
