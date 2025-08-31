@@ -158,4 +158,12 @@ dedupe-%: ## Deduplicate a JSONL (usage: make dedupe-path=path/to/file.jsonl FIE
 interrupt-gen: ## Regenerate interruption recovery datasets (seed overridable: SEED=42)
 	python3 fine_tuning/training/scripts/generate_interruption_recovery_dataset.py --out-dir fine_tuning/datasets/processed/interruption_handling --seed ${SEED}
 
+## ---- Fine-Tune (Phi3 General Jeeves) ----
+finetune-phi3-general: ## Run general Phi3 (Jeeves base) LoRA fine-tune (DATASET=path override)
+	@DATASET_PATH=${DATASET:-data/general/jeeves_general_dataset.jsonl}; \
+	CONF=fine_tuning/training/configs/phi3_general_lora.yaml; \
+	if [ ! -f $$DATASET_PATH ]; then echo "Dataset $$DATASET_PATH missing"; exit 1; fi; \
+	python fine_tuning/training/scripts/finetune_phi3_general.py --config $$CONF --dataset $$DATASET_PATH || exit 1; \
+	echo "[finetune] Completed general Phi3 LoRA training"
+
 .PHONY: help venv setup freeze deps-gpu-or-cpu fmt lint check test serve chat-dev stop pg-up pg-down ollama-down redis-down stack-down compose-up compose-restart dashboard-build dashboard-build-nometrics chat-build clear-cache whisper-setup print-env sop-sync manifest dedupe-% interrupt-gen
