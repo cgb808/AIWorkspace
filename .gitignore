@@ -5,7 +5,8 @@
 # Environment
 .env
 .env-
-*.env.redacted
+.env-
+backup/env/
 
 # --- DO NOT PUSH (auto-managed hygiene block) ---
 # Large dependency trees / vendored sources (retain minimal README if needed)
@@ -60,4 +61,14 @@ build/
 # Large model / dataset artifacts (added after remote rejection)
 data/standard/english_standard_dataset.jsonl
 whisper/ggml-base.en.bin
+# Additional large local datasets & downloads
+data/downloaded/
+data/standard/mathematics_standard_dataset.jsonl
+
+# Local test embedding model artifacts
+models/test-embed-mini/
+models/test-embed-mini-int8/
+
+# Large media / 3D assets retained locally
+scripts/Meet Mira/
 # --- END DO NOT PUSH BLOCK ---

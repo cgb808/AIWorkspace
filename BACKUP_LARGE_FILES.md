@@ -37,5 +37,59 @@ These paths are now covered by `.gitignore`. If you accidentally stage them, uns
 git restore --staged data/standard/english_standard_dataset.jsonl whisper/ggml-base.en.bin || true
 ```
 
+### Current Ignored Large / Generated Artifacts Snapshot
+
+The following additional large or generated files/directories are ignored (patterns from `.gitignore` or implicitly untracked) and should remain local-only:
+
+Ignored dataset/model artifacts:
+- `data/downloaded/` (individual large JSONL instructional datasets e.g. orca, narrativeqa, race)
+- `data/standard/mathematics_standard_dataset.jsonl`
+- `models/test-embed-mini/model.safetensors`
+- `models/test-embed-mini-int8/model.safetensors`
+- `vendor/whisper.cpp/models/` (e.g. `ggml-small.en.bin`)
+- `whisper/ggml-base.en.bin`
+
+Tool / build outputs:
+- `node_modules/`
+- `vendor/whisper.cpp/build/`
+- `vendor/whisper.cpp/examples/**/build/`
+- `artifact/knowledge-graph/run-*` and `artifact/knowledge-graph/latest`
+
+Generated analysis & transient artifacts:
+- `artifact/analysis/*.json`
+- `artifact/analysis/*.txt`
+
+Experimental/Archive (excluded copies):
+- `archive/dashboard (copy)/`
+- `archive/dashboard_handoff (copy)/`
+- `archive/gemma_phi_ui/`
+- `archive/model_finetune_quant (copy)/`
+- `archive/extracted_zip/`
+
+Virtual env & caches:
+- `.venv/`, `venv/`
+- `.mypy_cache/`, `.pytest_cache/`
+- `__pycache__/`
+
+Large 3D / media assets (examples):
+- `scripts/Meet Mira/sharable-bot.glb`
+- `scripts/Meet Mira/nsbu-patrick/Patrick.zip`
+
+Other sizeable binaries (tooling):
+- `node_modules/supabase/bin/supabase`
+- `frontend/dashboard/node_modules/**/esbuild`
+- `frontend/dashboard/node_modules/typescript/lib/{typescript,tsserver,tsc}.js`
+
+### Generator / Helper Scripts (Do Not Commit Outputs)
+The following scripts create large or transient outputs that should stay ignored; only commit the scripts themselves:
+- `scripts/generate_hybrid_dataset.py`
+- `scripts/create_methodology_dataset.py`
+- `scripts/build_clarify_priority_dataset.py`
+- `fine_tuning/training/scripts/build_dataset_manifest.py`
+- `fine_tuning/training/scripts/generate_interruption_recovery_dataset.py`
+- `scripts/package_training_artifacts.py`
+
+If new large generators are added, add their output directories to `.gitignore` and append to this list.
+
 ---
 Last updated: $(date)
