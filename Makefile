@@ -38,6 +38,20 @@ deps-gpu-or-cpu: ## GPU-first dependency install with CPU torch fallback
 	pip install -r requirements-dev.txt; \
 	python -c 'import fastapi, torch, transformers; print("[deps] Smoke import OK")'
 
+train-deps: ## Install extended training deps (requirements-train.txt)
+	@if [ ! -d .venv ]; then $(PYTHON) -m venv .venv; fi; \
+	. .venv/bin/activate; \
+	pip install --upgrade pip setuptools wheel; \
+	pip install -r requirements-train.txt; \
+	echo "[train-deps] Installed training extensions"
+
+deps-all: ## Install unified full stack deps (runtime + train + dev) via requirements-all.txt
+	@if [ ! -d .venv ]; then $(PYTHON) -m venv .venv; fi; \
+	. .venv/bin/activate; \
+	pip install --upgrade pip setuptools wheel; \
+	pip install -r requirements-all.txt; \
+	python -c 'import fastapi, torch, transformers; print("[deps-all] Smoke import OK")'
+
 ## ---- Quality ----
 fmt: ## Run formatters
 	. .venv/bin/activate && ruff check --fix . || true
@@ -130,6 +144,24 @@ chat-build: ## Build chat-only UI (metrics disabled)
 clear-cache: ## Flush Redis DB (dangerous)
 	. .venv/bin/activate && python -c 'import os,redis; r=redis.Redis(host=os.getenv("REDIS_HOST","localhost"),port=int(os.getenv("REDIS_PORT","6379")),db=int(os.getenv("REDIS_DB","0"))); r.flushdb(); print("Flushed")'
 
+migrate: ## Apply pending SQL migrations (DRY_RUN=1 to preview)
+	. .venv/bin/activate && python scripts/apply_migrations.py
+
+ensure-phi3: ## Ensure phi3 model pulled to Ollama host
+	bash scripts/ensure_phi3_model.sh
+
+piper-voices: ## Download Piper voice models (amy, alan, southern male)
+	bash scripts/ensure_piper_voices.sh
+
+audio-setup: ## Setup whisper + piper voices (end-to-end STT/TTS assets)
+	$(MAKE) whisper-setup
+	$(MAKE) piper-voices
+
+watch-profile: ## Watch a member profile for changes (FULL_NAME="Charles Bowen" INTERVAL=20)
+	FULL_NAME=${FULL_NAME:-"Charles Bowen"}; \
+	INTERVAL=${INTERVAL:-20}; \
+	python scripts/profile_change_watcher.py --full-name "$$FULL_NAME" --interval $$INTERVAL ${DSN:+--dsn $$DSN} ${REDIS_URL:+--redis-url $$REDIS_URL}
+
 whisper-setup: ## Setup whisper.cpp (build binary)
 	bash scripts/setup_whisper_cpp.sh
 
@@ -139,12 +171,6 @@ print-env: ## Print key env vars
 	@echo EMBED_ENDPOINT=${EMBED_ENDPOINT}
 
 ## ---- Governance / SOP ----
-sop-sync: ## Ensure AI_TERMINAL_SOP.md symlinks exist across common project roots
-	@if [ ! -f AI_TERMINAL_SOP.md ]; then echo "Canonical AI_TERMINAL_SOP.md missing"; exit 1; fi
-	. .venv/bin/activate 2>/dev/null || true; python3 scripts/create_sop_symlinks.py --paths \
-	  .venv frontend infrastructure gemma_phi_ui knowledge-graph fine_tuning scripts supabase app models tests || true
-	@echo "[sop-sync] Complete"
-
 ## ---- Datasets ----
 manifest: ## Build consolidated processed dataset manifest
 	python3 fine_tuning/training/scripts/build_dataset_manifest.py --pretty
@@ -165,5 +191,38 @@ finetune-phi3-general: ## Run general Phi3 (Jeeves base) LoRA fine-tune (DATASET
 	if [ ! -f $$DATASET_PATH ]; then echo "Dataset $$DATASET_PATH missing"; exit 1; fi; \
 	python fine_tuning/training/scripts/finetune_phi3_general.py --config $$CONF --dataset $$DATASET_PATH || exit 1; \
 	echo "[finetune] Completed general Phi3 LoRA training"
+
+jeeves-train-prep: ## Generate hybrid + RAG usage + audit + optional bundle (ARGS="--include-rag-batches --audit --bundle-tar artifacts/jeeves_bundle.tar.gz")
+	python scripts/jeeves_training_runner.py $(ARGS)
+
+jarvis-mix: ## Build Jarvis mix dataset from manifest (outputs processed/jarvis_mix_v1)
+	python fine_tuning/training/scripts/build_jarvis_mix.py
+
+embed-finetune: ## Fine-tune embedding model (DATA=path OUTPUT=dir BASE=BAAI/bge-small-en-v1.5 EPOCHS=1 BATCH=64)
+	@if [ -z "${DATA}" ]; then echo "Provide DATA= path to pairs file (tsv/csv/jsonl)"; exit 1; fi; \
+	if [ -z "${OUTPUT}" ]; then echo "Provide OUTPUT= output directory"; exit 1; fi; \
+	BASE=${BASE:-BAAI/bge-small-en-v1.5}; EPOCHS=${EPOCHS:-1}; BATCH=${BATCH:-64}; LR=${LR:-2e-5}; \
+	. .venv/bin/activate && python fine_tuning/training/scripts/train_embedding_model.py \
+	  --data ${DATA} --output ${OUTPUT} --base-model $$BASE --epochs $$EPOCHS --batch-size $$BATCH --lr $$LR ${USE_LORA:+--use-lora}
+
+embed-quantize: ## Quantize embedding model (MODEL=dir OUTPUT=dir DTYPE=int8|int4)
+	@if [ -z "${MODEL}" ]; then echo "Provide MODEL= path to trained model dir"; exit 1; fi; \
+	if [ -z "${OUTPUT}" ]; then echo "Provide OUTPUT= target directory"; exit 1; fi; \
+	DTYPE=${DTYPE:-int8}; \
+	. .venv/bin/activate && python fine_tuning/training/scripts/quantize_embedding_model.py --model-path ${MODEL} --output ${OUTPUT} --dtype $$DTYPE
+
+embed-serve: ## Serve embedding model (MODEL=dir PORT=8000 HOST=0.0.0.0)
+	@if [ -z "${MODEL}" ]; then echo "Provide MODEL= path to model dir"; exit 1; fi; \
+	PORT=${PORT:-8000}; HOST=${HOST:-0.0.0.0}; DEVICE=${DEVICE:-}; CONC=${CONCURRENCY:-4}; BATCH=${BATCH:-32}; NORMALIZE=${NORMALIZE:-0}; \
+	. .venv/bin/activate && SERVE_MODEL=${MODEL} SERVE_PORT=$$PORT SERVE_HOST=$$HOST SERVE_DEVICE=$$DEVICE SERVE_CONCURRENCY=$$CONC SERVE_BATCH_SIZE=$$BATCH SERVE_NORMALIZE=$$NORMALIZE python scripts/serve_embedding_model.py
+
+gen-safety-interventions: ## Generate safety_moderation_interventions dataset (N=200)
+	NVAL=$${N:-200}; . .venv/bin/activate && python fine_tuning/datasets/generation/generate_safety_moderation_interventions.py --n $$NVAL
+
+gen-refusal-boundary: ## Generate refusal_boundary_cases dataset (N=200)
+	NVAL=$${N:-200}; . .venv/bin/activate && python fine_tuning/datasets/generation/generate_refusal_boundary_cases.py --n $$NVAL
+
+jarvis-mix: ## Build Jarvis mix dataset from manifest (outputs processed/jarvis_mix_v1)
+	python fine_tuning/training/scripts/build_jarvis_mix.py
 
 .PHONY: help venv setup freeze deps-gpu-or-cpu fmt lint check test serve chat-dev stop pg-up pg-down ollama-down redis-down stack-down compose-up compose-restart dashboard-build dashboard-build-nometrics chat-build clear-cache whisper-setup print-env sop-sync manifest dedupe-% interrupt-gen
