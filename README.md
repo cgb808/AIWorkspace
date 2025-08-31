@@ -18,6 +18,11 @@ Key Doc Links:
 - Multi-GPU setup: RTX 3060 Ti + GTX 1660 Super
 - NVIDIA Container Toolkit for GPU support
 
+### Large Assets & Backups (No LFS)
+Oversized dataset/model blobs were intentionally removed from Git history to satisfy GitHub limits and keep clones lean. They are documented (with recovery instructions) in `BACKUP_LARGE_FILES.md`. Git LFS is **not** used by project policy; store / retrieve large artifacts from your external backup location and rehydrate locally when needed.
+
+Hard commit guard: a custom `pre-commit` hook blocks files >100MB and warns for >50MB to prevent re‑adding them. See `scripts/git-hooks/pre-commit`.
+
 ## Current AI Architecture
 ## AI Architecture
 
@@ -124,6 +129,8 @@ Install hooks:
 pre-commit install
 ```
 Hooks run ruff (auto-fix), black, isort, mypy (non-blocking).
+
+Note: A size guard hook (`scripts/git-hooks/pre-commit`) is also installed manually to block large files; keep `BACKUP_LARGE_FILES.md` updated instead of committing raw large binaries.
 
 ### Folder Highlights
 | Path | Purpose |
