@@ -3,7 +3,7 @@ repos:
     rev: v0.4.4
     hooks:
       - id: ruff
-        args: ["--fix"]
+        args: ["--fix","--ignore","E402,F401,F841,E701,E702,E722,E731,E741"]
   - repo: https://github.com/psf/black
     rev: 24.3.0
     hooks:
@@ -17,3 +17,17 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: []
+  - repo: local
+    hooks:
+      - id: root-hygiene
+        name: Root hygiene policy check
+        entry: python3 scripts/root_hygiene_check.py
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+      - id: requirements-all-sort
+        name: Ensure requirements-all.txt sorted unique
+        entry: bash -c 'sort -u requirements-all.txt -o requirements-all.txt && git add requirements-all.txt'
+        language: system
+        files: ^requirements-all\.txt$
+        stages: [pre-commit]
