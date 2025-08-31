@@ -11,7 +11,9 @@ No caching; intended for ad-hoc diagnostics (not high frequency polling).
 
 import os
 import time
+
 from fastapi import APIRouter
+
 from app.rag.llm_client import LLMClient
 
 router = APIRouter(prefix="/llm", tags=["llm"])
@@ -32,7 +34,13 @@ def _probe_edge(client: LLMClient) -> dict:
     try:
         meta = client.generate_with_metadata(_PING_PROMPT, max_tokens=4, prefer="edge")
         ok = bool(meta.get("text")) and meta.get("backend") == "edge"
-        return {"attempted": True, "ok": ok, "latency_ms": (time.time()-t0)*1000, "backend": meta.get("backend"), "errors": meta.get("errors")}
+        return {
+            "attempted": True,
+            "ok": ok,
+            "latency_ms": (time.time() - t0) * 1000,
+            "backend": meta.get("backend"),
+            "errors": meta.get("errors"),
+        }
     except Exception as e:  # pragma: no cover - defensive
         return {"attempted": True, "ok": False, "error": str(e)}
 
@@ -43,9 +51,17 @@ def _probe_ollama(client: LLMClient) -> dict:
         return {"attempted": False, "ok": False, "reason": "OLLAMA_URL unset"}
     t0 = time.time()
     try:
-        meta = client.generate_with_metadata(_PING_PROMPT, max_tokens=4, prefer="ollama")
+        meta = client.generate_with_metadata(
+            _PING_PROMPT, max_tokens=4, prefer="ollama"
+        )
         ok = bool(meta.get("text")) and meta.get("backend") == "ollama"
-        return {"attempted": True, "ok": ok, "latency_ms": (time.time()-t0)*1000, "backend": meta.get("backend"), "errors": meta.get("errors")}
+        return {
+            "attempted": True,
+            "ok": ok,
+            "latency_ms": (time.time() - t0) * 1000,
+            "backend": meta.get("backend"),
+            "errors": meta.get("errors"),
+        }
     except Exception as e:
         return {"attempted": True, "ok": False, "error": str(e)}
 
@@ -58,7 +74,13 @@ def _probe_llama_cpp(client: LLMClient) -> dict:
     try:
         meta = client.generate_with_metadata(_PING_PROMPT, max_tokens=4, prefer="llama")
         ok = bool(meta.get("text")) and meta.get("backend") in ("llama.cpp", "llama")
-        return {"attempted": True, "ok": ok, "latency_ms": (time.time()-t0)*1000, "backend": meta.get("backend"), "errors": meta.get("errors")}
+        return {
+            "attempted": True,
+            "ok": ok,
+            "latency_ms": (time.time() - t0) * 1000,
+            "backend": meta.get("backend"),
+            "errors": meta.get("errors"),
+        }
     except Exception as e:
         return {"attempted": True, "ok": False, "error": str(e)}
 
@@ -73,7 +95,10 @@ def probe_llms() -> dict:
         "edge": edge,
         "ollama": ollama,
         "llama_cpp": llama_cpp,
-        "all_failed": all(not v.get("ok") for v in [edge, ollama, llama_cpp] if v.get("attempted")),
+        "all_failed": all(
+            not v.get("ok") for v in [edge, ollama, llama_cpp] if v.get("attempted")
+        ),
     }
+
 
 __all__ = ["router"]

@@ -14,14 +14,20 @@ Usage:
 Type 'exit' or Ctrl+D to quit.
 """
 from __future__ import annotations
-import os, torch, sys
+
+import os
+import sys
 from typing import Optional
 
+import torch
+
 try:
-    from transformers import AutoModelForCausalLM, AutoTokenizer
     from peft import PeftModel
+    from transformers import AutoModelForCausalLM, AutoTokenizer
 except Exception as e:  # noqa: BLE001
-    raise SystemExit("Install transformers and peft first (see requirements.txt)") from e
+    raise SystemExit(
+        "Install transformers and peft first (see requirements.txt)"
+    ) from e
 
 MODEL_NAME = os.getenv("GEMMA_MODEL", "google/gemma-2b-it")
 ADAPTER_PATH: Optional[str] = os.getenv("LORA_ADAPTER") or None
@@ -30,13 +36,16 @@ LOAD_8BIT = os.getenv("LOAD_8BIT", "0") == "1"
 MAX_NEW = int(os.getenv("MAX_NEW_TOKENS", "256"))
 
 from typing import Any
+
 load_kwargs: dict[str, Any] = {"device_map": "auto"}
 if QLORA:
     load_kwargs["load_in_4bit"] = True
 elif LOAD_8BIT:
     load_kwargs["load_in_8bit"] = True
 
-print(f"Loading model: {MODEL_NAME} (adapter={ADAPTER_PATH or 'none'}, qlora={QLORA}, 8bit={LOAD_8BIT})")
+print(
+    f"Loading model: {MODEL_NAME} (adapter={ADAPTER_PATH or 'none'}, qlora={QLORA}, 8bit={LOAD_8BIT})"
+)
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_fast=True)
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
@@ -48,6 +57,7 @@ if ADAPTER_PATH:
 
 model.eval()
 print("Ready. Enter your prompt.")
+
 
 def generate(prompt: str) -> str:
     inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
@@ -63,7 +73,8 @@ def generate(prompt: str) -> str:
         )
     text = tokenizer.decode(out[0], skip_special_tokens=True)
     # Attempt to return only the continuation
-    return text[len(prompt):].strip() if text.startswith(prompt) else text
+    return text[len(prompt) :].strip() if text.startswith(prompt) else text
+
 
 try:
     for line in sys.stdin:

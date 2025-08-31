@@ -5,8 +5,11 @@ and force predictable detection by returning a score > threshold for the configu
 
 Detection loop is asynchronous in a background thread; tests poll /wake/status until detected or timeout.
 """
+
 import os
 import time
+
+import pytest
 from fastapi.testclient import TestClient
 
 # Ensure required env vars so app.main doesn't fail validation
@@ -14,10 +17,19 @@ os.environ.setdefault("DATABASE_URL", "sqlite:///./test.db")
 os.environ.setdefault("REDIS_HOST", "localhost")
 os.environ.setdefault("REDIS_PORT", "6379")
 
-from app.main import app  # ensures router registered
-from app.audio import wake_router
+SKIP_WAKE = os.getenv("SKIP_WAKE_TESTS") == "1"
 
-client = TestClient(app)
+if not SKIP_WAKE:
+    from app.audio import wake_router
+    from app.main import app  # ensures router registered
+else:
+    app = None  # type: ignore
+    wake_router = None  # type: ignore
+
+client = TestClient(app) if not SKIP_WAKE else None  # type: ignore
+
+pytestmark = pytest.mark.skipif(SKIP_WAKE, reason="SKIP_WAKE_TESTS=1")
+
 
 class FakeWakeModel:
     def predict(self, chunk: bytes):  # chunk is raw bytes
@@ -43,38 +55,40 @@ def _wait_for(predicate, timeout=2.0):
 
 
 def test_wake_status_initial_disabled():
-    resp = client.get('/wake/status')
+    resp = client.get("/wake/status")
     assert resp.status_code == 200
     js = resp.json()
-    assert js['enabled'] is False
-    assert js['detected'] is False
+    assert js["enabled"] is False
+    assert js["detected"] is False
 
 
 def test_wake_enable_and_detect():
     _force_mock_model()
     # Enable wake
-    resp = client.post('/wake/enable', json={'enabled': True, 'model': 'hey_jarvis'})
+    resp = client.post("/wake/enable", json={"enabled": True, "model": "hey_jarvis"})
     assert resp.status_code == 200
     js = resp.json()
-    assert js['enabled'] is True
+    assert js["enabled"] is True
     # Push a dummy PCM16 chunk (2 bytes silence) base64 => 'AAA=' but minimal length helps loop
-    resp2 = client.post('/wake/push', json={'pcm16': 'AAAA'})
+    resp2 = client.post("/wake/push", json={"pcm16": "AAAA"})
     assert resp2.status_code == 200
     # Poll until detected flips True
-    assert _wait_for(lambda: client.get('/wake/status').json()['detected'] is True), 'wake word not detected in time'
+    assert _wait_for(
+        lambda: client.get("/wake/status").json()["detected"] is True
+    ), "wake word not detected in time"
     # Clear detection
-    resp3 = client.post('/wake/clear')
+    resp3 = client.post("/wake/clear")
     assert resp3.status_code == 200
-    assert resp3.json()['detected'] is False
+    assert resp3.json()["detected"] is False
 
 
 def test_wake_disable():
     # Disable
-    resp = client.post('/wake/enable', json={'enabled': False})
+    resp = client.post("/wake/enable", json={"enabled": False})
     assert resp.status_code == 200
     js = resp.json()
-    assert js['enabled'] is False
+    assert js["enabled"] is False
     # Pushing while disabled should not set detected
-    client.post('/wake/push', json={'pcm16': 'AAAA'})
+    client.post("/wake/push", json={"pcm16": "AAAA"})
     time.sleep(0.1)
-    assert client.get('/wake/status').json()['detected'] is False
+    assert client.get("/wake/status").json()["detected"] is False

@@ -12,34 +12,58 @@ Endpoint:
 
 For now we shell out to keep dependencies optional.
 """
+
 from __future__ import annotations
-from fastapi import APIRouter, UploadFile, File, HTTPException
+
+import base64
+import os
+import subprocess
+import tempfile
+
+from fastapi import APIRouter, File, HTTPException, UploadFile
 from pydantic import BaseModel
-import tempfile, subprocess, os, base64
 
 XTTS_SCRIPT = os.getenv("XTTS_SCRIPT", "scripts/xtts_infer.py")
 XTTS_MODEL_DIR = os.getenv("XTTS_MODEL_DIR", "models/xtts")
 
 router = APIRouter(prefix="/audio", tags=["audio-xtts"])  # separate tag
 
+
 def run_xtts_simple(text: str, ref_path: str) -> bytes:
     """Helper for internal reuse (returns raw wav bytes)."""
     if not os.path.exists(XTTS_SCRIPT):
         raise RuntimeError("xtts script not found")
-    import tempfile, subprocess
+    import subprocess
+    import tempfile
+
     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as out_f:
         out_path = out_f.name
-    cmd = ["python", XTTS_SCRIPT, "--model_dir", XTTS_MODEL_DIR, "--ref", ref_path, "--text", text, "--out", out_path]
+    cmd = [
+        "python",
+        XTTS_SCRIPT,
+        "--model_dir",
+        XTTS_MODEL_DIR,
+        "--ref",
+        ref_path,
+        "--text",
+        text,
+        "--out",
+        out_path,
+    ]
     proc = subprocess.run(cmd, capture_output=True, timeout=180)
     if proc.returncode != 0:
-        raise RuntimeError(f"xtts failed: {proc.stderr.decode('utf-8','ignore')[-300:]}")
+        raise RuntimeError(
+            f"xtts failed: {proc.stderr.decode('utf-8','ignore')[-300:]}"
+        )
     try:
-        with open(out_path, 'rb') as f:
+        with open(out_path, "rb") as f:
             return f.read()
     finally:
         if os.path.exists(out_path):
-            try: os.unlink(out_path)
-            except Exception: pass
+            try:
+                os.unlink(out_path)
+            except Exception:
+                pass
 
 
 class XTTSClonePayload(BaseModel):
@@ -58,7 +82,18 @@ async def xtts_clone(payload: XTTSClonePayload, ref: UploadFile = File(...)):
         ref_path = ref_f.name
     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as out_f:
         out_path = out_f.name
-    cmd = ["python", XTTS_SCRIPT, "--model_dir", XTTS_MODEL_DIR, "--ref", ref_path, "--text", payload.text, "--out", out_path]
+    cmd = [
+        "python",
+        XTTS_SCRIPT,
+        "--model_dir",
+        XTTS_MODEL_DIR,
+        "--ref",
+        ref_path,
+        "--text",
+        payload.text,
+        "--out",
+        out_path,
+    ]
     try:
         proc = subprocess.run(cmd, capture_output=True, timeout=180)
     except subprocess.TimeoutExpired:

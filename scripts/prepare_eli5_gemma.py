@@ -5,20 +5,21 @@ Reads: data/eli5_sample.jsonl
 Writes: data/eli5_gemma.jsonl with fields: instruction, input, output
 """
 from __future__ import annotations
-import json, os
+
+import json
 from pathlib import Path
 
 SRC = Path("data/eli5_sample.jsonl")
 DST = Path("data/eli5_gemma.jsonl")
 
-TEMPLATE_SYSTEM = (
-    "You are a patient tutor. Provide concise, kid-friendly explanations."
-)
+TEMPLATE_SYSTEM = "You are a patient tutor. Provide concise, kid-friendly explanations."
 
 
 def convert():
     if not SRC.exists():
-        raise SystemExit(f"Source file not found: {SRC}. Run scripts/fetch_eli5.py first.")
+        raise SystemExit(
+            f"Source file not found: {SRC}. Run scripts/fetch_eli5.py first."
+        )
     out_lines = []
     with SRC.open("r", encoding="utf-8") as f:
         for line in f:

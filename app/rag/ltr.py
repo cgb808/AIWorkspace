@@ -7,7 +7,9 @@ Simple linear model placeholder. Real implementation may load:
 
 Kept minimal + dependency free for bootstrap.
 """
+
 from __future__ import annotations
+
 from typing import List
 
 

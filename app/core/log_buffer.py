@@ -4,14 +4,15 @@ Stores last N log lines (formatted) with incremental ids. Frontend polls
 `/logs/recent?since=<last_id>` to fetch new lines. Not suitable for multi-
 process or production usage.
 """
+
 from __future__ import annotations
 
-from collections import deque
-from dataclasses import dataclass, asdict
-from threading import RLock
 import logging
 import time
-from typing import List, Dict, Any
+from collections import deque
+from dataclasses import asdict, dataclass
+from threading import RLock
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -31,7 +32,9 @@ class RollingBuffer:
 
     def append(self, level: str, msg: str) -> None:
         with self._lock:
-            self._dq.append(LogEntry(id=self._next, ts=time.time(), level=level, msg=msg))
+            self._dq.append(
+                LogEntry(id=self._next, ts=time.time(), level=level, msg=msg)
+            )
             self._next += 1
 
     def since(self, last_id: int, limit: int = 500) -> List[Dict[str, Any]]:
@@ -69,7 +72,7 @@ def install(level: int = logging.INFO) -> None:
     if _INSTALLED:
         return
     h = BufferHandler()
-    h.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(name)s: %(message)s'))
+    h.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
     root = logging.getLogger()
     root.addHandler(h)
     if root.level > level:

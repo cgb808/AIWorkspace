@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import logging
 import os
 import time
-import logging
 from typing import Any, Dict, Optional
 
 import requests
+
 from app.core import metrics
 
 
@@ -23,6 +24,7 @@ log = logging.getLogger("app.rag.llm_client")
 class LLMClient:
     # Whether outbound calls to non-local hosts are allowed (set at init)
     _allow_external: bool = False
+
     def __init__(
         self,
         default_temperature: float = 0.2,
@@ -39,15 +41,29 @@ class LLMClient:
         # 1. If LLM_ALLOW_EXTERNAL=1 -> no restriction (use with care)
         # 2. Otherwise we allow localhost, 127.*, and RFC1918 LAN ranges (10.*, 192.168.*, 172.16-31.*)
         # 3. Additional prefixes may be supplied via LLM_ALLOW_PREFIXES (comma separated, exact startswith match)
-        self._allow_external = os.getenv("LLM_ALLOW_EXTERNAL", "0").lower() in {"1", "true", "yes", "on"}
+        self._allow_external = os.getenv("LLM_ALLOW_EXTERNAL", "0").lower() in {
+            "1",
+            "true",
+            "yes",
+            "on",
+        }
         extra_prefixes_raw = os.getenv("LLM_ALLOW_PREFIXES", "")
-        self._allow_prefixes = [p.strip() for p in extra_prefixes_raw.split(',') if p.strip()]
+        self._allow_prefixes = [
+            p.strip() for p in extra_prefixes_raw.split(",") if p.strip()
+        ]
         # Precompute base safe prefixes (when _allow_external is False)
         self._local_prefixes = [
-            "http://localhost", "https://localhost", "http://127.", "https://127.",
-            "http://10.", "https://10.", "http://192.168.", "https://192.168.",
+            "http://localhost",
+            "https://localhost",
+            "http://127.",
+            "https://127.",
+            "http://10.",
+            "https://10.",
+            "http://192.168.",
+            "https://192.168.",
             # 172.16. -> 172.31.
-            *[f"http://172.{i}." for i in range(16,32)], *[f"https://172.{i}." for i in range(16,32)],
+            *[f"http://172.{i}." for i in range(16, 32)],
+            *[f"https://172.{i}." for i in range(16, 32)],
         ]
 
     # Public API -----------------------------------------------------------
@@ -67,31 +83,46 @@ class LLMClient:
         prompt: str,
         temperature: Optional[float] = None,
         max_tokens: int = 512,
-    prefer: str = "auto",  # auto|edge|llama|ollama|leonardo|leo|jarvis|mistral|phi3
+        prefer: str = "auto",  # auto|edge|llama|ollama|leonardo|leo|jarvis|mistral|phi3
     ) -> Dict[str, Any]:
         metrics.inc("llm_calls_total")
         debug = os.getenv("LLM_DEBUG", "0").lower() in {"1", "true", "yes", "on"}
         if debug:
-            log.debug("llm.generate.start", extra={"prefer": prefer, "max_tokens": max_tokens, "len_prompt": len(prompt)})
+            log.debug(
+                "llm.generate.start",
+                extra={
+                    "prefer": prefer,
+                    "max_tokens": max_tokens,
+                    "len_prompt": len(prompt),
+                },
+            )
         temp = temperature if temperature is not None else self.default_temperature
 
         # Env resolution
         supabase_url = os.getenv("SUPABASE_URL")
         multi_fn_raw = os.getenv("SUPABASE_EDGE_FUNCTIONS")
         if multi_fn_raw:
-            supabase_functions = [f.strip() for f in multi_fn_raw.split(',') if f.strip()]
+            supabase_functions = [
+                f.strip() for f in multi_fn_raw.split(",") if f.strip()
+            ]
         else:
-            supabase_functions = [os.getenv("SUPABASE_EDGE_FUNCTION", "get_gemma_response")]
+            supabase_functions = [
+                os.getenv("SUPABASE_EDGE_FUNCTION", "get_gemma_response")
+            ]
         supabase_key = _resolve_supabase_key()
 
         ollama_url = os.getenv("OLLAMA_URL", "http://localhost:11434")
         ollama_model = os.getenv("OLLAMA_MODEL", "gemma:2b")
-        llama_cpp_model_path = os.getenv("LLAMA_CPP_MODEL")  # placeholder future direct mode
+        llama_cpp_model_path = os.getenv(
+            "LLAMA_CPP_MODEL"
+        )  # placeholder future direct mode
         llama_cpp_server_url = os.getenv("LLAMA_CPP_SERVER_URL")
 
         # Disable list (comma separated): entries can include 'edge','ollama','llama', or special values: all,* ,true,1
         disabled_raw = os.getenv("LLM_DISABLE", "")
-        disabled_tokens = [d.strip().lower() for d in disabled_raw.split(',') if d.strip()]
+        disabled_tokens = [
+            d.strip().lower() for d in disabled_raw.split(",") if d.strip()
+        ]
         if any(tok in {"all", "*", "true", "1"} for tok in disabled_tokens):
             disabled: set[str] = {"edge", "ollama", "llama", "llama.cpp"}
         else:
@@ -128,7 +159,13 @@ class LLMClient:
                 )
                 if txt is not None:
                     if debug:
-                        log.info("llm.success.edge", extra={"function": fn_name, "latency_ms": meta.get("latency_ms")})
+                        log.info(
+                            "llm.success.edge",
+                            extra={
+                                "function": fn_name,
+                                "latency_ms": meta.get("latency_ms"),
+                            },
+                        )
                     total_ms = (time.time() - start_total) * 1000
                     metrics.observe("llm_total_latency_ms", total_ms)
                     metrics.observe("llm_edge_latency_ms", meta.get("latency_ms", 0))
@@ -145,7 +182,14 @@ class LLMClient:
                 err_msg = meta.get("error", "failure")
                 errors.append(f"{fn_name}: " + err_msg)
                 if debug:
-                    log.warning("llm.fail.edge", extra={"function": fn_name, "error": err_msg, "attempts": meta.get("attempts")})
+                    log.warning(
+                        "llm.fail.edge",
+                        extra={
+                            "function": fn_name,
+                            "error": err_msg,
+                            "attempts": meta.get("attempts"),
+                        },
+                    )
             if prefer == "edge":
                 total_ms = (time.time() - start_total) * 1000
                 metrics.observe("llm_total_latency_ms", total_ms)
@@ -174,13 +218,18 @@ class LLMClient:
             and "llama" not in disabled
         ):
             if debug:
-                log.debug("llm.attempt.llama_cpp", extra={"server": llama_cpp_server_url})
+                log.debug(
+                    "llm.attempt.llama_cpp", extra={"server": llama_cpp_server_url}
+                )
             txt, meta = self._invoke_llama_cpp(
                 llama_cpp_server_url, llama_cpp_model_path, prompt, temp, max_tokens
             )
             if txt is not None:
                 if debug:
-                    log.info("llm.success.llama_cpp", extra={"latency_ms": meta.get("latency_ms")})
+                    log.info(
+                        "llm.success.llama_cpp",
+                        extra={"latency_ms": meta.get("latency_ms")},
+                    )
                 total_ms = (time.time() - start_total) * 1000
                 metrics.observe("llm_total_latency_ms", total_ms)
                 metrics.observe("llm_llama_latency_ms", meta.get("latency_ms", 0))
@@ -221,13 +270,19 @@ class LLMClient:
         # 3. Ollama
         if prefer in ("auto", "ollama") and "ollama" not in disabled:
             if debug:
-                log.debug("llm.attempt.ollama", extra={"url": ollama_url, "model": ollama_model})
+                log.debug(
+                    "llm.attempt.ollama",
+                    extra={"url": ollama_url, "model": ollama_model},
+                )
             txt, meta = self._invoke_ollama(
                 ollama_url, ollama_model, prompt, temp, max_tokens
             )
             if txt is not None:
                 if debug:
-                    log.info("llm.success.ollama", extra={"latency_ms": meta.get("latency_ms")})
+                    log.info(
+                        "llm.success.ollama",
+                        extra={"latency_ms": meta.get("latency_ms")},
+                    )
                 total_ms = (time.time() - start_total) * 1000
                 metrics.observe("llm_total_latency_ms", total_ms)
                 metrics.observe("llm_ollama_latency_ms", meta.get("latency_ms", 0))
@@ -274,13 +329,19 @@ class LLMClient:
             leonardo_url = os.getenv("LEONARDO_URL", ollama_url)
             leonardo_model = os.getenv("LEONARDO_MODEL", "mistral:7b")
             if debug:
-                log.debug("llm.attempt.leonardo", extra={"url": leonardo_url, "model": leonardo_model})
+                log.debug(
+                    "llm.attempt.leonardo",
+                    extra={"url": leonardo_url, "model": leonardo_model},
+                )
             txt, meta = self._invoke_ollama(
                 leonardo_url, leonardo_model, prompt, temp, max_tokens
             )
             if txt is not None:
                 if debug:
-                    log.info("llm.success.leonardo", extra={"latency_ms": meta.get("latency_ms")})
+                    log.info(
+                        "llm.success.leonardo",
+                        extra={"latency_ms": meta.get("latency_ms")},
+                    )
                 total_ms = (time.time() - start_total) * 1000
                 metrics.observe("llm_total_latency_ms", total_ms)
                 metrics.observe("llm_leonardo_latency_ms", meta.get("latency_ms", 0))
@@ -298,18 +359,24 @@ class LLMClient:
             if debug:
                 log.warning("llm.fail.leonardo", extra={"error": leonardo_err})
 
-        # 5. Jarvis (Phi3 on GTX 1660 Super) 
+        # 5. Jarvis (Phi3 on GTX 1660 Super)
         if prefer in ("jarvis", "phi3") and "ollama" not in disabled:
             jarvis_url = os.getenv("JARVIS_URL", ollama_url)
             jarvis_model = os.getenv("JARVIS_MODEL", "phi3:3.8b-mini-4k-instruct-q4_0")
             if debug:
-                log.debug("llm.attempt.jarvis", extra={"url": jarvis_url, "model": jarvis_model})
+                log.debug(
+                    "llm.attempt.jarvis",
+                    extra={"url": jarvis_url, "model": jarvis_model},
+                )
             txt, meta = self._invoke_ollama(
                 jarvis_url, jarvis_model, prompt, temp, max_tokens
             )
             if txt is not None:
                 if debug:
-                    log.info("llm.success.jarvis", extra={"latency_ms": meta.get("latency_ms")})
+                    log.info(
+                        "llm.success.jarvis",
+                        extra={"latency_ms": meta.get("latency_ms")},
+                    )
                 total_ms = (time.time() - start_total) * 1000
                 metrics.observe("llm_total_latency_ms", total_ms)
                 metrics.observe("llm_jarvis_latency_ms", meta.get("latency_ms", 0))
@@ -364,7 +431,9 @@ class LLMClient:
             return None, {"error": "edge not configured"}
         fn_url = f"{base_url.rstrip('/')}/functions/v1/{fn_name}"
         # Outbound safety: block non-local unless explicitly allowed
-        if not self._allow_external and not fn_url.startswith(tuple(self._local_prefixes + self._allow_prefixes)):
+        if not self._allow_external and not fn_url.startswith(
+            tuple(self._local_prefixes + self._allow_prefixes)
+        ):
             return None, {"error": "blocked outbound (edge)"}
         headers = {
             "Content-Type": "application/json",
@@ -402,7 +471,7 @@ class LLMClient:
             except Exception as e:  # noqa: BLE001
                 last_error = f"exception: {type(e).__name__}: {e}"
             if attempt < self.retries:
-                time.sleep(self.backoff_base * (2 ** attempt))
+                time.sleep(self.backoff_base * (2**attempt))
         return None, {
             "error": last_error or "unknown edge failure",
             "latency_ms": (time.time() - start) * 1000,
@@ -418,7 +487,9 @@ class LLMClient:
         max_tokens: int,
     ) -> tuple[Optional[str], Dict[str, Any]]:
         url = f"{base_url.rstrip('/')}/api/generate"
-        if not self._allow_external and not url.startswith(tuple(self._local_prefixes + self._allow_prefixes)):
+        if not self._allow_external and not url.startswith(
+            tuple(self._local_prefixes + self._allow_prefixes)
+        ):
             return None, {"error": "blocked outbound (ollama)"}
         start = time.time()
         try:
@@ -463,7 +534,9 @@ class LLMClient:
             return None, {"error": "llama.cpp not configured"}
         if server_url:
             url = f"{server_url.rstrip('/')}/completion"
-            if not self._allow_external and not url.startswith(tuple(self._local_prefixes + self._allow_prefixes)):
+            if not self._allow_external and not url.startswith(
+                tuple(self._local_prefixes + self._allow_prefixes)
+            ):
                 return None, {"error": "blocked outbound (llama.cpp)"}
             start = time.time()
             try:

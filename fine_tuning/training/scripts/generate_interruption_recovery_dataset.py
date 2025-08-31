@@ -33,22 +33,46 @@ Outputs:
   interruption_recovery_manifest.json (counts & distribution)
 """
 from __future__ import annotations
-import json, random, argparse, math
-from dataclasses import dataclass, asdict
+
+import argparse
+import json
+import math
+import random
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 BASE_INTERRUPTION_TYPES = [
-    "clarification", "lost_context", "topic_shift", "session_end", "multi_turn_probe", "emotion_signal"
+    "clarification",
+    "lost_context",
+    "topic_shift",
+    "session_end",
+    "multi_turn_probe",
+    "emotion_signal",
 ]
 RECOVERY_STRATEGIES = [
-    "socratic_probe", "context_reaffirm", "agnostic_closer", "emotional_ack", "guided_choice", "topic_gateway"
+    "socratic_probe",
+    "context_reaffirm",
+    "agnostic_closer",
+    "emotional_ack",
+    "guided_choice",
+    "topic_gateway",
 ]
 AFFECT_FOCI = [
-    "curiosity", "confusion_resolution", "calm_reassurance", "transition_management", "positive_closure", "engagement_renewal"
+    "curiosity",
+    "confusion_resolution",
+    "calm_reassurance",
+    "transition_management",
+    "positive_closure",
+    "engagement_renewal",
 ]
 CONTROLLER_LABELS = [
-    "continue", "clarify", "gather_info", "close_session", "switch_domain", "pause_resume"
+    "continue",
+    "clarify",
+    "gather_info",
+    "close_session",
+    "switch_domain",
+    "pause_resume",
 ]
 SPECIALIZED_DOMAINS = ["mathematics", "science", "programming", "literature", "history"]
 
@@ -61,9 +85,9 @@ SCENARIOS = [
         "user_prompts": [
             "Sorry, can you slow down there? I'm not sure I grasp the first stage.",
             "Hold on—why do we start with that instead of an example first?",
-            "Wait, before you continue, what exactly does 'base principle' mean here?"
+            "Wait, before you continue, what exactly does 'base principle' mean here?",
         ],
-        "default_output": "Great catch—let's anchor the very first piece before stacking more. The 'base principle' here means the fundamental rule everything else depends on. Once that feels solid, the rest becomes much easier. Could you tell me which part of it feels vague?"
+        "default_output": "Great catch—let's anchor the very first piece before stacking more. The 'base principle' here means the fundamental rule everything else depends on. Once that feels solid, the rest becomes much easier. Could you tell me which part of it feels vague?",
     },
     {
         "id": "procedure_walkthrough",
@@ -72,9 +96,9 @@ SCENARIOS = [
         "user_prompts": [
             "Pause—what do you mean by normalize?",
             "Wait, is edge condition checking always before computation?",
-            "Can we jump to the final step?"
+            "Can we jump to the final step?",
         ],
-        "default_output": "Normalization just means bringing inputs into a consistent, expected form (units, scale, or format). Would it help if we co-created a tiny example before proceeding?"
+        "default_output": "Normalization just means bringing inputs into a consistent, expected form (units, scale, or format). Would it help if we co-created a tiny example before proceeding?",
     },
     {
         "id": "session_wrap",
@@ -83,9 +107,9 @@ SCENARIOS = [
         "user_prompts": [
             "Uh can you just tell me a random fact instead?",
             "Actually I might be done— not sure.",
-            "Can we switch to something totally different?"
+            "Can we switch to something totally different?",
         ],
-        "default_output": "We can absolutely pivot or pause. I can either: (1) recap succinctly, (2) explore a quick related curiosity, or (3) close the session cleanly. Which serves you best right now?"
+        "default_output": "We can absolutely pivot or pause. I can either: (1) recap succinctly, (2) explore a quick related curiosity, or (3) close the session cleanly. Which serves you best right now?",
     },
     {
         "id": "lost_context",
@@ -93,9 +117,9 @@ SCENARIOS = [
         "narration": "Earlier we mapped the core idea to a familiar analogy to lock it in.",
         "user_prompts": [
             "Sorry I zoned out—where were we?",
-            "I lost the thread—can we rewind a bit?"
+            "I lost the thread—can we rewind a bit?",
         ],
-        "default_output": "No problem—I'll rebuild the scaffold. We had just linked the concept to an everyday pattern. Want a 1‑sentence recap or a step‑by‑step rewind?"
+        "default_output": "No problem—I'll rebuild the scaffold. We had just linked the concept to an everyday pattern. Want a 1‑sentence recap or a step‑by‑step rewind?",
     },
 ]
 
@@ -123,7 +147,10 @@ TOPIC_GATEWAYS = [
     "We can pivot: stick with depth, explore breadth, or practice retrieval—what's your instinct?",
 ]
 
-def synthesize_output(base: Dict[str, Any], interruption_type: str, recovery_strategy: str) -> str:
+
+def synthesize_output(
+    base: Dict[str, Any], interruption_type: str, recovery_strategy: str
+) -> str:
     """Blend elements into a response variant."""
     narration = base["narration"]
     core = base["default_output"]
@@ -139,9 +166,12 @@ def synthesize_output(base: Dict[str, Any], interruption_type: str, recovery_str
     elif recovery_strategy == "context_reaffirm":
         pieces.append(core)
     elif recovery_strategy == "guided_choice":
-        pieces.append("We have a few paths: a quick recap, a deeper drill, or pivot to a new angle. Which helps you more?")
+        pieces.append(
+            "We have a few paths: a quick recap, a deeper drill, or pivot to a new angle. Which helps you more?"
+        )
     # Emotional ack may accompany others
     return " ".join(pieces).strip()
+
 
 @dataclass
 class Example:
@@ -174,24 +204,30 @@ def generate_examples(count: int, tier: str, domains: List[str]) -> List[Example
         user_prompt = random.choice(base["user_prompts"])
         input_text = f"{base['narration']} [USER_INTERRUPTION] {user_prompt}"
         output_text = synthesize_output(base, interruption_type, recovery_strategy)
-        quality = 5 if recovery_strategy in ("socratic_probe", "guided_choice", "topic_gateway") else 4
-        examples.append(Example(
-            instruction=base["instruction"],
-            input=input_text,
-            output=output_text,
-            interruption_type=interruption_type,
-            recovery_strategy=recovery_strategy,
-            affect_focus=affect_focus,
-            controller_label=controller_label,
-            tier=tier,
-            domain=domain,
-            meta={
-                "template_id": base["id"],
-                "variant_id": i,
-                "source": "synthetic_v1",
-                "quality": quality
-            }
-        ))
+        quality = (
+            5
+            if recovery_strategy in ("socratic_probe", "guided_choice", "topic_gateway")
+            else 4
+        )
+        examples.append(
+            Example(
+                instruction=base["instruction"],
+                input=input_text,
+                output=output_text,
+                interruption_type=interruption_type,
+                recovery_strategy=recovery_strategy,
+                affect_focus=affect_focus,
+                controller_label=controller_label,
+                tier=tier,
+                domain=domain,
+                meta={
+                    "template_id": base["id"],
+                    "variant_id": i,
+                    "source": "synthetic_v1",
+                    "quality": quality,
+                },
+            )
+        )
     return examples
 
 
@@ -210,13 +246,16 @@ def stratified_generate(total: int, tier: str, domains: List[str]) -> List[Examp
     return flat[:total]
 
 
-def build_manifest(base_examples: List[Example], spec_examples: List[Example]) -> Dict[str, Any]:
+def build_manifest(
+    base_examples: List[Example], spec_examples: List[Example]
+) -> Dict[str, Any]:
     def dist(exs: List[Example], attr: str) -> Dict[str, int]:
         out: Dict[str, int] = {}
         for e in exs:
             key = getattr(e, attr)
             out[key] = out.get(key, 0) + 1
         return dict(sorted(out.items()))
+
     return {
         "total_base": len(base_examples),
         "total_specialized": len(spec_examples),
@@ -224,15 +263,19 @@ def build_manifest(base_examples: List[Example], spec_examples: List[Example]) -
         "recovery_strategy_distribution_base": dist(base_examples, "recovery_strategy"),
         "controller_label_distribution_base": dist(base_examples, "controller_label"),
         "domains_specialized": dist(spec_examples, "domain"),
-        "recovery_strategy_distribution_specialized": dist(spec_examples, "recovery_strategy"),
+        "recovery_strategy_distribution_specialized": dist(
+            spec_examples, "recovery_strategy"
+        ),
         "notes": "Synthetic generation v1. Consider human refinement pass for top quality subset.",
-        "schema_version": "1.0.0"
+        "schema_version": "1.0.0",
     }
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out-dir", default="fine_tuning/datasets/processed/interruption_handling")
+    ap.add_argument(
+        "--out-dir", default="fine_tuning/datasets/processed/interruption_handling"
+    )
     ap.add_argument("--base-count", type=int, default=400)
     ap.add_argument("--specialized-count", type=int, default=100)
     ap.add_argument("--seed", type=int, default=13)
@@ -244,7 +287,9 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
 
     base_examples = stratified_generate(args.base_count, "base", [])
-    spec_examples = stratified_generate(args.specialized_count, "specialized", SPECIALIZED_DOMAINS)
+    spec_examples = stratified_generate(
+        args.specialized_count, "specialized", SPECIALIZED_DOMAINS
+    )
 
     base_path = out_dir / "interruption_recovery_base_400.jsonl"
     spec_path = out_dir / "interruption_recovery_specialized_100.jsonl"
@@ -264,7 +309,11 @@ def main():
     print(f"✅ Generated {len(base_examples)} base examples -> {base_path}")
     print(f"✅ Generated {len(spec_examples)} specialized examples -> {spec_path}")
     print(f"📄 Manifest -> {manifest_path}")
-    print("Distribution (base interruption types):", manifest["interruption_type_distribution_base"])
+    print(
+        "Distribution (base interruption types):",
+        manifest["interruption_type_distribution_base"],
+    )
+
 
 if __name__ == "__main__":
     main()

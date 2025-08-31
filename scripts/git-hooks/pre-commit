@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Pre-commit size guard
+# Blocks committing files over hard limit (100MB) and warns above soft limit (50MB).
+
+set -euo pipefail
+
+SOFT_LIMIT=$((50*1024*1024))
+HARD_LIMIT=$((100*1024*1024))
+
+exit_with_msg() {
+  echo "[pre-commit][ERROR] $1" >&2
+  exit 1
+}
+
+warn() {
+  echo "[pre-commit][WARN] $1" >&2
+}
+
+# Get staged (added/modified) files
+STAGED=$(git diff --cached --name-only --diff-filter=AM)
+[ -z "$STAGED" ] && exit 0
+
+HARD_HITS=()
+SOFT_HITS=()
+
+for f in $STAGED; do
+  [ -f "$f" ] || continue
+  size=$(stat -c %s "$f" 2>/dev/null || echo 0)
+  if [ $size -ge $HARD_LIMIT ]; then
+    HARD_HITS+=("$f:$size")
+  elif [ $size -ge $SOFT_LIMIT ]; then
+    SOFT_HITS+=("$f:$size")
+  fi
+done
+
+if [ ${#SOFT_HITS[@]} -gt 0 ]; then
+  warn "Files above soft limit (>50MB):"
+  for h in "${SOFT_HITS[@]}"; do
+    name=${h%%:*}; sz=${h##*:};
+    printf '  - %s (%.2f MB)\n' "$name" "$(echo "$sz/1024/1024" | bc -l)"
+  done
+fi
+
+if [ ${#HARD_HITS[@]} -gt 0 ]; then
+  echo "Files exceeding hard limit (100MB) blocked:" >&2
+  for h in "${HARD_HITS[@]}"; do
+    name=${h%%:*}; sz=${h##*:};
+    printf '  - %s (%.2f MB)\n' "$name" "$(echo "$sz/1024/1024" | bc -l)" >&2
+  done
+  exit_with_msg "Remove or externalize these files (see BACKUP_LARGE_FILES.md)."
+fi
+
+exit 0

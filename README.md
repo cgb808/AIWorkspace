@@ -78,6 +78,8 @@ If venv creation warns about ensurepip missing, the Makefile target attempts a m
 sudo apt-get update && sudo apt-get install -y python3-venv
 ```
 
+Single venv option:
+Use `requirements-all.txt` to install runtime + training + dev in one pass (large footprint). For lighter installs pick one of: `requirements.txt` (runtime), `requirements-train.txt`, `requirements-dev.txt`, `requirements-embed.txt`.
 ### Python 3.12 Environment for Embeddings
 Transformers/tokenizers currently lag Python 3.13 support. For full embedding features use Python 3.12:
 ```bash
@@ -152,6 +154,9 @@ See `docs/devops/DEVOPS.md` for evolving operational tasks (CI, metrics, deploym
 
 ---
 For more details, see `docs/AGENT_BOOTSTRAP_CONTEXT.md` and `docs/MEMORY_RAG_INTEGRATION.md`.
+
+### Memory ↔ RAG Bridge Reliability (Aug 31 2025)
+The `memory_rag_bridge.py` now supports crash‑safe resume via an offset sidecar with periodic atomic flushes plus exponential backoff for embedding + DB operations. See `docs/MEMORY_RAG_INTEGRATION.md` and `docs/integration/MCP_RAG_INTEGRATION.md` for configuration (`OFFSET_SIDECAR_PATH`, `OFFSET_FLUSH_INTERVAL`, `--reset-offset`).
 
 ## Docker Compose Usage & Nuances
 

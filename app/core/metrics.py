@@ -5,10 +5,11 @@ Keeps rolling latency samples (naive list capped) and simple counters.
 Thread-safety: minimal; FastAPI default Uvicorn workers (single process) so
 basic locking via threading.Lock.
 """
+
 from __future__ import annotations
 
-import time
 import threading
+import time
 from typing import Dict, List
 
 _lock = threading.Lock()
@@ -43,7 +44,7 @@ def observe(latency_name: str, value_ms: float) -> None:
         arr.append(value_ms)
         if len(arr) > _MAX_SAMPLES:
             # Drop oldest half to avoid O(n) shift
-            del arr[: len(arr)//2]
+            del arr[: len(arr) // 2]
 
 
 def snapshot() -> Dict[str, object]:
@@ -55,11 +56,13 @@ def snapshot() -> Dict[str, object]:
                 continue
             sorted_arr = sorted(arr)
             n = len(sorted_arr)
+
             def pct(p: float) -> float:
                 if n == 0:
                     return 0.0
                 idx = min(n - 1, int(p * n) - 1)
                 return sorted_arr[idx]
+
             latency[k] = {
                 "count": float(n),
                 "avg": sum(sorted_arr) / n,
@@ -75,5 +78,6 @@ def snapshot() -> Dict[str, object]:
 class Timer:
     def __init__(self):
         self.start = time.time()
+
     def ms(self) -> float:
         return (time.time() - self.start) * 1000

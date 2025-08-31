@@ -5,9 +5,10 @@ This module is isolated so we can silence mypy noise from dynamic libs.
 
 # mypy: ignore-errors
 from __future__ import annotations
+
 import os
-import time
 import subprocess
+import time
 from typing import Any, Dict, List
 
 try:
@@ -23,6 +24,7 @@ except Exception:  # pragma: no cover
 _CACHE: Dict[str, Any] | None = None
 _CACHE_TS: float | None = None
 _TTL = 2.0
+
 
 def _gpus_via_pynvml() -> List[Dict[str, Any]]:
     g: List[Dict[str, Any]] = []
@@ -40,52 +42,71 @@ def _gpus_via_pynvml() -> List[Dict[str, Any]]:
             name = raw_name.decode() if isinstance(raw_name, bytes) else str(raw_name)
             total_mb = int(mem.total / (1024 * 1024))
             used_mb = int(mem.used / (1024 * 1024))
-            g.append({
-                "index": i,
-                "name": name,
-                "memory_total_mb": total_mb,
-                "memory_used_mb": used_mb,
-                "memory_percent": round(used_mb / total_mb * 100, 2) if total_mb else 0.0,
-                "utilization_percent": getattr(util, 'gpu', None),
-                "temperature_c": temp,
-            })
+            g.append(
+                {
+                    "index": i,
+                    "name": name,
+                    "memory_total_mb": total_mb,
+                    "memory_used_mb": used_mb,
+                    "memory_percent": (
+                        round(used_mb / total_mb * 100, 2) if total_mb else 0.0
+                    ),
+                    "utilization_percent": getattr(util, "gpu", None),
+                    "temperature_c": temp,
+                }
+            )
     except Exception:
         return []
     return g
 
+
 def _gpus_via_nvidia_smi() -> List[Dict[str, Any]]:
     try:
-        out = subprocess.check_output([
-            "nvidia-smi",
-            "--query-gpu=name,memory.total,memory.used,utilization.gpu,temperature.gpu",
-            "--format=csv,noheader,nounits",
-        ], stderr=subprocess.DEVNULL, timeout=1.5).decode().strip()
+        out = (
+            subprocess.check_output(
+                [
+                    "nvidia-smi",
+                    "--query-gpu=name,memory.total,memory.used,utilization.gpu,temperature.gpu",
+                    "--format=csv,noheader,nounits",
+                ],
+                stderr=subprocess.DEVNULL,
+                timeout=1.5,
+            )
+            .decode()
+            .strip()
+        )
         g: List[Dict[str, Any]] = []
         if out:
             for idx, line in enumerate(out.splitlines()):
-                parts = [p.strip() for p in line.split(',')]
+                parts = [p.strip() for p in line.split(",")]
                 if len(parts) == 5:
                     name, mem_total, mem_used, util_gpu, temp = parts
                     total_mb = int(mem_total)
                     used_mb = int(mem_used)
-                    g.append({
-                        "index": idx,
-                        "name": name,
-                        "memory_total_mb": total_mb,
-                        "memory_used_mb": used_mb,
-                        "memory_percent": round(used_mb / total_mb * 100, 2) if total_mb else 0.0,
-                        "utilization_percent": float(util_gpu),
-                        "temperature_c": int(temp),
-                    })
+                    g.append(
+                        {
+                            "index": idx,
+                            "name": name,
+                            "memory_total_mb": total_mb,
+                            "memory_used_mb": used_mb,
+                            "memory_percent": (
+                                round(used_mb / total_mb * 100, 2) if total_mb else 0.0
+                            ),
+                            "utilization_percent": float(util_gpu),
+                            "temperature_c": int(temp),
+                        }
+                    )
         return g
     except Exception:
         return []
+
 
 def _gather_gpu() -> List[Dict[str, Any]]:
     g = _gpus_via_pynvml()
     if g:
         return g
     return _gpus_via_nvidia_smi()
+
 
 def get_system_metrics() -> Dict[str, Any]:  # runtime path
     global _CACHE, _CACHE_TS

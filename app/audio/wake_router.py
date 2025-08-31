@@ -1,12 +1,14 @@
+import queue
+import threading
+import time
+from typing import Any, Optional
+
 from fastapi import APIRouter
 from pydantic import BaseModel
-from typing import Optional, Any
-import threading
-import queue
-import time
 
 try:
     from openwakeword.model import Model as WakeModel  # type: ignore
+
     _wake_available = True
 except Exception:
     _wake_available = False
@@ -14,11 +16,13 @@ except Exception:
 
 router = APIRouter(prefix="/wake", tags=["wake"])
 
+
 class WakeStatus(BaseModel):
     enabled: bool
     model: Optional[str]
     detected: bool
     backend_active: bool
+
 
 _state = {
     "enabled": False,
@@ -68,6 +72,7 @@ def _worker():  # pragma: no cover - runtime loop
         time.sleep(0.005)
     # loop exit
 
+
 @router.get("/status", response_model=WakeStatus)
 def wake_status():
     return WakeStatus(
@@ -77,9 +82,11 @@ def wake_status():
         backend_active=_worker_thread is not None and _worker_thread.is_alive(),
     )
 
+
 class WakeEnableRequest(BaseModel):
     enabled: bool
     model: Optional[str] = None
+
 
 @router.post("/enable", response_model=WakeStatus)
 def wake_enable(req: WakeEnableRequest):
@@ -100,8 +107,10 @@ def wake_enable(req: WakeEnableRequest):
         _worker_thread.start()
     return wake_status()
 
+
 class WakeAudioChunk(BaseModel):
     pcm16: bytes  # raw little-endian 16-bit mono 16k
+
 
 @router.post("/push", response_model=WakeStatus)
 def wake_push(chunk: WakeAudioChunk):
@@ -114,6 +123,7 @@ def wake_push(chunk: WakeAudioChunk):
     except queue.Full:
         pass
     return wake_status()
+
 
 @router.post("/clear", response_model=WakeStatus)
 def wake_clear():

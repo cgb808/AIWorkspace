@@ -4,7 +4,7 @@
       "Refer to COPILOT.md for SOP (modes, safety matrix, directory policy).",
       "Execution Rule: ONE terminal command per step; wait for output before next.",
       "Context Sources: project-index.json, root README.md, docs/ hierarchy.",
-      "Directory Policy: No new root files unless in allowlist (README.md, COPILOT.md, Makefile, docker-compose*.yml, kong.yml, package.json, package-lock.json, project-index*.json, requirements-*.txt, settings.json, pytest.ini, run_tests.sh, .env*, .gitignore).",
+  "Directory Policy: No new root files unless in allowlist (README.md, COPILOT.md, Makefile, docker-compose*.yml, kong.yml, package.json, package-lock.json, project-index*.json, requirements-*.txt, settings.json, pytest.ini, run_tests.sh, .env*, .gitignore); enforce via scripts/root_hygiene_check.py.",
       "Memory MCP: Persist key architectural decisions & doc relocations.",
       "Sequential Thinking: Break complex tasks into verifiable substeps before edits.",
       "Commit Guidance: Summarize intent, scope (dirs touched), notable constraints."

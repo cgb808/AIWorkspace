@@ -3,7 +3,7 @@
 [Back to Docs Index](../DOCS_INDEX.md) | [DevOps Overview](./DEVOPS.md)
 
 # DevOps Operational TODO & History
-Last Updated: 2025-08-28
+Last Updated: 2025-08-31
 
 Purpose:
 Single pane for (a) active DevOps / platform engineering backlog, (b) recently completed infrastructure & operations work, and (c) timeline context so new contributors (or automation) can understand why things exist.
@@ -66,8 +66,25 @@ Legend: [P]=Planned / not started, [WIP]=In progress, [BLK]=Blocked, [R]=Researc
 - [P] Onboard script printing missing env & suggested defaults
 - [R] Pre-commit hook: black + isort + pyright subset
 
+### 1.10 Ingestion Reliability & RAG Bridge
+- [D] Embedding / DB retry & backoff implementation (memory_rag_bridge)
+- [D] Offset persistence sidecar (resume after restart) w/ CLI --reset-offset
+- [D] Unit tests for memory_rag_bridge (offset resume, retry failure path, search)
+- [P] Additional tests: DB transient error simulation path
+- [P] Periodic metrics for ingestion (ingested_count, retry_count, last_offset)
+- [P] Sidecar compaction / rotation strategy (large file lifecycle)
+- [P] Replay pipeline integration test (msgpack -> embeddings -> search sanity)
+- [R] Auto-ingest canary verification (sample search queries post-restart)
+
 ---
 ## 2. Recently Completed (Chronological)
+2025-08-31
+- **RAG Bridge Reliability Tests**: Added `tests/test_memory_rag_bridge.py` covering offset persistence, retry failure, and search path.
+- **Offset Persistence Implementation**: Sidecar JSON with atomic writes + CLI reset flag integrated into memory bridge.
+- **Retry/Backoff Operationalized**: Exponential backoff w/ jitter for embedding & DB operations (configurable env tunables).
+- **Docs Updated**: MEMORY_RAG_INTEGRATION.md, MCP_RAG_INTEGRATION.md, RAG_REPLAY_PIPELINE.md reflect persistence & replay.
+- **Pre-commit Hygiene**: Enforced ruff/black/isort/mypy + size & root hygiene guards (earlier; now validated in tests context).
+
 2025-08-28
 - **Leonardo Voice Integration**: Connected TTS (Piper) and Whisper speech recognition to Leonardo (Mistral 7B)
 - **Model Upgrade**: Successfully migrated Leonardo from smaller models to Mistral 7B (4.4GB) in Docker environment
@@ -166,7 +183,7 @@ Legend: [P]=Planned / not started, [WIP]=In progress, [BLK]=Blocked, [R]=Researc
 
 ---
 ## 8. Fast Status Summary (Today)
-Focus: Container orchestration complete, LLM stack operational. Next: Instrumentation + fusion configurability. Blockers: None (infrastructure foundation solid). Current priority: Deep instrumentation now that base services are reliable.
+Focus: Memory ↔ RAG ingestion reliability (offset + retries) achieved & tested. Next: Instrumentation (stage timings export), fusion configurability, CI pipeline. Blockers: None; prepare for controlled service reboot incorporating new offset persistence.
 
 ---
 ## 9. Glossary (Ops-Focused Additions)
@@ -176,6 +193,42 @@ Focus: Container orchestration complete, LLM stack operational. Next: Instrument
 - Docker Stack: Containerized 4-service architecture (backend, ollama, redis, webui) with orchestration
 - Service Discovery: Container-to-container networking via internal DNS (redis, ollama service names)
 - Health Verification: Automated endpoint testing and service readiness validation
+
+---
+---
+## 10. Reboot Preparation Checklist (Ephemeral – remove after completion)
+Goal: Safe platform reboot ensuring state continuity & rapid health validation.
+
+Pre-Reboot (T-30m):
+- [ ] Capture current memory bridge sidecar offset value
+- [ ] Run `make smoke` (once implemented) or manual smoke: /health, /rag/query test, /metrics/basic
+- [ ] Persist knowledge graph + model registry snapshot (memory-save) if diff since last snapshot
+- [ ] Verify no in-flight fine-tuning or replay tasks (queue empty)
+- [ ] Confirm Redis hit rate stable (> threshold) – optional note
+
+Shutdown Sequence:
+- [ ] Disable ingestion loop (send SIGINT or stop process) – confirm sidecar final flush
+- [ ] Stop Docker services (compose-down) or orchestrator equivalent
+- [ ] Archive logs (rotate if > size threshold)
+
+Startup Sequence:
+- [ ] Start core services (DB/Redis/Ollama/backend) – verify health checks
+- [ ] Launch memory_rag_bridge (observe: “Resuming from offset <prev>” in logs)
+- [ ] Run semantic canary queries (predefined N queries) – compare latency & top doc hash set vs. stored baseline
+- [ ] Check `/metrics/json` for non-zero ingestion lag & retry counters
+- [ ] Validate fusion weights endpoint still returns expected active weights
+
+Post-Reboot Verification (T+15m):
+- [ ] Confirm no unexpected retry spikes in logs
+- [ ] Snapshot new system metrics baseline (persist to doc or dashboard)
+- [ ] Update this checklist status & remove once stable
+
+Rollback (If Needed):
+- [ ] Revert to prior container image tag
+- [ ] Restore previous fusion weights snapshot
+- [ ] Re-run canary queries to confirm recovery
+
+Remove this section after successful reboot & incorporation into standard runbook.
 
 ---
 Evolves with each significant operational change. Keep terse, actionable, and chronologically truthful.

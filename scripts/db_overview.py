@@ -11,8 +11,14 @@ Usage:
 Safe: read-only SELECT COUNT(*) queries.
 """
 from __future__ import annotations
-import os, argparse, psycopg2, psycopg2.extras, sys
+
+import argparse
+import os
+import sys
 from typing import List
+
+import psycopg2
+import psycopg2.extras
 
 DEFAULT_TABLES = [
     "documents",
@@ -78,10 +84,12 @@ def count_rows(cur, name: str) -> int | None:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--tables", help="Comma separated explicit tables list", default=None)
+    ap.add_argument(
+        "--tables", help="Comma separated explicit tables list", default=None
+    )
     args = ap.parse_args()
     if args.tables:
-        targets: List[str] = [t.strip() for t in args.tables.split(',') if t.strip()]
+        targets: List[str] = [t.strip() for t in args.tables.split(",") if t.strip()]
     else:
         targets = DEFAULT_TABLES
     try:
@@ -102,8 +110,8 @@ def main():
     width = max(len(r["table"]) for r in rows) + 2
     print(f"{'TABLE'.ljust(width)} PRESENT COUNT")
     for r in rows:
-        present = 'Y' if r["present"] else 'N'
-        count = '-' if r["count"] is None else str(r["count"])
+        present = "Y" if r["present"] else "N"
+        count = "-" if r["count"] is None else str(r["count"])
         print(f"{r['table'].ljust(width)} {present}       {count}")
 
 

@@ -3,8 +3,10 @@
 Uses HTTP endpoint defined by EMBED_ENDPOINT (default internal service) and supports
 single or batch text embedding. Falls back to zero-vector only if explicitly allowed.
 """
-from typing import List, Sequence
+
 import os
+from typing import List, Sequence
+
 import requests
 
 EMBED_ENDPOINT = os.getenv("EMBED_ENDPOINT", "http://127.0.0.1:8000/model/embed")

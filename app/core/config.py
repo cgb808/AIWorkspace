@@ -7,9 +7,12 @@ Responsibilities:
 
 Secrets are intentionally excluded from snapshots based on heuristic name matching.
 """
+
 from __future__ import annotations
+
 import os
 from typing import Dict, List, Tuple
+
 from fastapi import APIRouter
 
 # Old -> New env var mapping for backward compatibility
@@ -57,7 +60,9 @@ def validate_required_env(fail_fast: bool = True) -> List[str]:
     """
     missing = [v for v in REQUIRED_ENV if not os.getenv(v)]
     if fail_fast and missing:
-        raise RuntimeError(f"Missing required environment variables: {', '.join(missing)}")
+        raise RuntimeError(
+            f"Missing required environment variables: {', '.join(missing)}"
+        )
     return missing
 
 
@@ -74,7 +79,15 @@ def get_sanitized_env_snapshot() -> Dict[str, str]:
       * Exclude anything whose name contains secret markers (KEY, SECRET, PASS, TOKEN, PASSWORD) except allowlist of SUPABASE_URL.
     """
     snapshot: Dict[str, str] = {}
-    allow_prefixes = ("RAG_", "OLLAMA_", "REDIS_", "PG_", "DATABASE_URL", "CHROMA_", "SUPABASE_URL")
+    allow_prefixes = (
+        "RAG_",
+        "OLLAMA_",
+        "REDIS_",
+        "PG_",
+        "DATABASE_URL",
+        "CHROMA_",
+        "SUPABASE_URL",
+    )
     for k, v in os.environ.items():
         if not k.startswith(allow_prefixes):
             continue

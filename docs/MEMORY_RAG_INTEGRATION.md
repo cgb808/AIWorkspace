@@ -120,6 +120,25 @@ Merge memory + document context:
 | Governance | Add PII redaction hook. |
 | Freshness | Provide TTL cleanup for stale memory vectors. |
 | Metrics | Count ingested lines, embedding latency histogram, similarity latency. |
+| Reliability | File rotation detection + inode change handler (planned). |
+
+## Offset Persistence (Implemented 2025-08-31)
+The bridge now persists its byte offset in a sidecar JSON file so restarts do not re‑embed historical lines.
+
+Environment / CLI:
+```
+OFFSET_SIDECAR_PATH=/custom/path/offset.json   # optional; defaults to MEMORY_FILE_PATH.offset.json
+OFFSET_FLUSH_INTERVAL=5                        # seconds between offset fsyncs (default 5)
+DISABLE_OFFSET_PERSIST=1                       # set to disable persistence (stateless mode)
+python memory_rag_bridge.py --reset-offset     # ignore stored offset and start from beginning
+```
+Behavior:
+* Atomic writes via temp file + replace.
+* Detects truncation (stored offset > current file size) and safely resets to 0.
+* Flushes periodically and on graceful `--once` exit.
+* Dedup table still prevents accidental duplicate embeddings even if offset were to regress.
+
+Operational Tip: Keep sidecar on the same filesystem as the memory file to avoid cross-device rename edge cases and to inherit identical durability semantics.
 
 ## Failure Modes & Recovery
 | Issue | Mitigation |

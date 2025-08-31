@@ -7,7 +7,10 @@ Outputs:
 You can adjust SAMPLE_SIZE via env ELI5_SAMPLE (default 50).
 """
 from __future__ import annotations
-import os, json, random
+
+import json
+import os
+import random
 from pathlib import Path
 
 SAMPLE_SIZE = int(os.getenv("ELI5_SAMPLE", "50"))
@@ -18,6 +21,8 @@ try:  # Lazy import guard
     from datasets import load_dataset  # type: ignore
 except Exception:  # noqa: BLE001
     load_dataset = None  # type: ignore
+
+
 def main():
     print("Attempting to load ELI5 dataset...")
     dataset = None
@@ -37,9 +42,18 @@ def main():
     if dataset is None:
         print(f"Falling back to stub examples (reason: {load_error})")
         samples = [
-            {"question": "Why is the sky blue?", "answer": "Air molecules scatter blue light more than other colors."},
-            {"question": "What is photosynthesis?", "answer": "Plants use sunlight to turn water and air into food (sugars)."},
-            {"question": "Why do we yawn?", "answer": "Likely to help regulate brain temperature and oxygen / CO2 balance."},
+            {
+                "question": "Why is the sky blue?",
+                "answer": "Air molecules scatter blue light more than other colors.",
+            },
+            {
+                "question": "What is photosynthesis?",
+                "answer": "Plants use sunlight to turn water and air into food (sugars).",
+            },
+            {
+                "question": "Why do we yawn?",
+                "answer": "Likely to help regulate brain temperature and oxygen / CO2 balance.",
+            },
         ]
     else:
         # Prefer train split
@@ -83,6 +97,7 @@ def main():
         for obj in samples:
             f.write(json.dumps(obj, ensure_ascii=False) + "\n")
     print(f"Wrote {len(samples)} records to {OUT_FILE}")
+
 
 if __name__ == "__main__":
     main()

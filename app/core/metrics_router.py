@@ -16,15 +16,15 @@ Graceful Degradation:
   If optional tables (queue, runtime_metrics, ingest log) are missing the
   endpoint will omit those sections instead of failing entirely.
 """
+
 from __future__ import annotations
 
 import os
-import time
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List
 
-from fastapi import APIRouter, HTTPException, Request
 import psycopg2  # type: ignore
+from fastapi import APIRouter, HTTPException, Request
 
 from app.core import metrics as inproc_metrics
 
@@ -79,9 +79,7 @@ def dashboard_metrics(request: Request) -> Dict[str, Any]:  # noqa: D401
     # Queue stats ---------------------------------------------------------
     try:
         with _pg_conn() as conn, conn.cursor() as cur:
-            cur.execute(
-                f"SELECT status, COUNT(id) FROM {QUEUE_TABLE} GROUP BY status"
-            )
+            cur.execute(f"SELECT status, COUNT(id) FROM {QUEUE_TABLE} GROUP BY status")
             rows = cur.fetchall()
             out["queue"] = [
                 {"status": r[0], "count": int(r[1])} for r in rows if r and len(r) >= 2
@@ -95,10 +93,14 @@ def dashboard_metrics(request: Request) -> Dict[str, Any]:  # noqa: D401
                 try:
                     created_ts = row[0]
                     if isinstance(created_ts, str):  # fallback parse
-                        created_dt = datetime.fromisoformat(created_ts.replace("Z", "+00:00"))
+                        created_dt = datetime.fromisoformat(
+                            created_ts.replace("Z", "+00:00")
+                        )
                     else:
                         created_dt = created_ts
-                    age_s = int((datetime.now(timezone.utc) - created_dt).total_seconds())
+                    age_s = int(
+                        (datetime.now(timezone.utc) - created_dt).total_seconds()
+                    )
                     out["queue_oldest_pending_age_s"] = age_s
                 except Exception:
                     pass
@@ -111,7 +113,9 @@ def dashboard_metrics(request: Request) -> Dict[str, Any]:  # noqa: D401
         with _pg_conn() as conn, conn.cursor() as cur:
             cur.execute("SELECT COUNT(id) FROM doc_embeddings")
             c = cur.fetchone()
-            out["doc_embeddings"] = [{"count": int(c[0]) if c and c[0] is not None else 0}]
+            out["doc_embeddings"] = [
+                {"count": int(c[0]) if c and c[0] is not None else 0}
+            ]
     except Exception:
         pass
 
@@ -139,9 +143,11 @@ def dashboard_metrics(request: Request) -> Dict[str, Any]:  # noqa: D401
                     n = len(arr)
                     if n == 0:
                         continue
+
                     def pct(p: float) -> float:
                         idx = min(n - 1, int(p * (n - 1)))
                         return arr[idx]
+
                     stats_list.append(
                         {
                             "metric": metric,
@@ -173,7 +179,9 @@ def dashboard_metrics(request: Request) -> Dict[str, Any]:  # noqa: D401
                     continue
                 rows = cur.fetchall() or []
                 ingest_log[label] = [
-                    {"status": r[0], "count": int(r[1])} for r in rows if r and len(r) >= 2
+                    {"status": r[0], "count": int(r[1])}
+                    for r in rows
+                    if r and len(r) >= 2
                 ]
     except Exception:
         pass

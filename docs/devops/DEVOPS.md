@@ -1,13 +1,13 @@
 <!-- Relocated from repository root on 2025-08-30 -->
 <!-- Relocated from repository root on 2025-08-30; canonical now under docs/devops/ -->
-[Back to Docs Index](../DOCS_INDEX.md) | [DevOps TODO History](./DEVOPS_TODO_HISTORY.md)
+[Back to Docs Index](../DOCS_INDEX.md)
 
 ZenGlow DevOps & Operational Practices (Living Document)
 Last Updated: 2025-08-27
 
 Tracks non-code operational concerns: CI, deployment, observability, security, reliability.
 
-Companion file: `DEVOPS_TODO_HISTORY.md` (chronological backlog + completion history for richer context).
+Companion backlog now tracked via issue tracker; historical placeholder file removed during root hygiene pass.
 
 ## 1. Build & CI
 Planned:

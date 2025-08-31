@@ -3,19 +3,27 @@ Provides /model/embed accepting {"texts": [..]} and returning {"embeddings": [..
 Uses a local sentence-transformers model (configurable via EMBED_MODEL). Falls back to
 simple hash-based embedding if transformers not available (never in production ideally).
 """
+
 from __future__ import annotations
+
+import hashlib
+import logging
+import math
+import os
+from typing import List
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import List
-import os, math, hashlib, logging
 
 router = APIRouter()
 
 _embed_model = None
 _model_name = os.getenv("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 
+
 class EmbedPayload(BaseModel):
     texts: List[str]
+
 
 class EmbedResponse(BaseModel):
     embeddings: List[List[float]]
@@ -28,6 +36,7 @@ def _lazy_load():  # pragma: no cover - heavy path
         return _embed_model
     try:
         from sentence_transformers import SentenceTransformer  # type: ignore
+
         _embed_model = SentenceTransformer(_model_name)
     except Exception as e:  # fallback lightweight deterministic embedding
         logging.getLogger(__name__).warning(
@@ -45,8 +54,9 @@ def _cheap_embed(text: str, dim: int = 384) -> List[float]:
     # map bytes to [-1,1]
     vec = [((b / 255.0) * 2.0 - 1.0) for b in raw]
     # L2 normalize
-    norm = math.sqrt(sum(v*v for v in vec)) or 1.0
+    norm = math.sqrt(sum(v * v for v in vec)) or 1.0
     return [v / norm for v in vec]
+
 
 @router.post("/model/embed", response_model=EmbedResponse)
 async def embed_texts(payload: EmbedPayload):

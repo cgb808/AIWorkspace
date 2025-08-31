@@ -13,12 +13,12 @@ Features:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import shutil
-from pathlib import Path
-import sys
 import subprocess
-import json
+import sys
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -32,15 +32,30 @@ RELATIVE_SOURCES = [
 
 
 def parse_args():
-    p = argparse.ArgumentParser(description="Sync Switchr artifacts to another repository path or remote host via rsync")
-    p.add_argument("--target", help="Absolute target repo path OR remote spec user@host:/abs/path (env SYNC_TARGET)")
-    p.add_argument("--dry-run", action="store_true", help="Show actions without copying")
-    p.add_argument("--rsync-flags", default="-az --delete", help="Extra flags for rsync when remote target is used")
+    p = argparse.ArgumentParser(
+        description="Sync Switchr artifacts to another repository path or remote host via rsync"
+    )
+    p.add_argument(
+        "--target",
+        help="Absolute target repo path OR remote spec user@host:/abs/path (env SYNC_TARGET)",
+    )
+    p.add_argument(
+        "--dry-run", action="store_true", help="Show actions without copying"
+    )
+    p.add_argument(
+        "--rsync-flags",
+        default="-az --delete",
+        help="Extra flags for rsync when remote target is used",
+    )
     p.add_argument("--host", help="Remote host (if building target spec)")
     p.add_argument("--user", help="Remote user (if building target spec)")
     p.add_argument("--path", dest="remote_path", help="Remote absolute repo path")
     p.add_argument("--port", type=int, help="SSH port if not default 22")
-    p.add_argument("--auto", action="store_true", help="Auto-detect using config file or environment variables")
+    p.add_argument(
+        "--auto",
+        action="store_true",
+        help="Auto-detect using config file or environment variables",
+    )
     return p.parse_args()
 
 
@@ -57,7 +72,9 @@ def load_config():
 
 def build_remote_spec(user: str | None, host: str | None, path: str | None) -> str:
     if not (host and path):
-        print("[sync] ERROR: host and path required to build remote spec", file=sys.stderr)
+        print(
+            "[sync] ERROR: host and path required to build remote spec", file=sys.stderr
+        )
         sys.exit(2)
     if user:
         return f"{user}@{host}:{path}"
@@ -89,7 +106,10 @@ def resolve_target(args):
         env_target = os.getenv("SYNC_TARGET")
         target_raw = env_target
         if not target_raw:
-            print("[sync] ERROR: Provide --target or use --auto with config/env", file=sys.stderr)
+            print(
+                "[sync] ERROR: Provide --target or use --auto with config/env",
+                file=sys.stderr,
+            )
             sys.exit(2)
     # Determine if remote
     if ":/" in target_raw.split("@")[-1]:
@@ -111,7 +131,14 @@ def copy_path_local(src: Path, dst: Path, dry: bool):
         shutil.copy2(src, dst)
 
 
-def copy_path_remote(src: Path, remote_root: str, rel: Path, dry: bool, rsync_flags: str, port: int | None):
+def copy_path_remote(
+    src: Path,
+    remote_root: str,
+    rel: Path,
+    dry: bool,
+    rsync_flags: str,
+    port: int | None,
+):
     remote_dest = f"{remote_root.rstrip('/')}/{rel.as_posix()}"
     if dry:
         print(f"[dry-run] Would rsync {src} -> {remote_dest}")
@@ -145,20 +172,31 @@ def main() -> int:
                 # Extract user@host part
                 remote_host_part = remote_root.split(":", 1)[0]
                 check_cmd += [remote_host_part, "echo", "SYNC_OK"]
-                res = subprocess.run(check_cmd, capture_output=True, text=True, timeout=10)
+                res = subprocess.run(
+                    check_cmd, capture_output=True, text=True, timeout=10
+                )
                 if res.returncode != 0 or "SYNC_OK" not in res.stdout:
-                    print(f"[sync] ERROR: SSH preflight failed: stdout='{res.stdout.strip()}' stderr='{res.stderr.strip()}'", file=sys.stderr)
-                    print("[sync] HINT: Verify host/IP, connectivity, and that SSH is actually running on the specified port.")
+                    print(
+                        f"[sync] ERROR: SSH preflight failed: stdout='{res.stdout.strip()}' stderr='{res.stderr.strip()}'",
+                        file=sys.stderr,
+                    )
+                    print(
+                        "[sync] HINT: Verify host/IP, connectivity, and that SSH is actually running on the specified port."
+                    )
                     return 5
             except Exception as e:  # noqa: BLE001
                 print(f"[sync] ERROR: SSH preflight exception: {e}", file=sys.stderr)
                 return 5
     else:
         if not target.exists():
-            print(f"[sync] ERROR: Target path does not exist: {target}", file=sys.stderr)
+            print(
+                f"[sync] ERROR: Target path does not exist: {target}", file=sys.stderr
+            )
             return 3
         if not (target / "app").exists():
-            print(f"[sync] WARNING: Target {target} missing 'app/' directory; creating minimal structure")
+            print(
+                f"[sync] WARNING: Target {target} missing 'app/' directory; creating minimal structure"
+            )
             (target / "app").mkdir(parents=True, exist_ok=True)
     for rel, _is_dir in RELATIVE_SOURCES:
         src = ROOT / rel
@@ -166,14 +204,18 @@ def main() -> int:
             print(f"[sync] Skip missing source: {src}")
             continue
         if remote_mode:
-            copy_path_remote(src, remote_root, rel, args.dry_run, args.rsync_flags, port)
+            copy_path_remote(
+                src, remote_root, rel, args.dry_run, args.rsync_flags, port
+            )
         else:
             dst = target / rel
             copy_path_local(src, dst, args.dry_run)
             if not args.dry_run:
                 print(f"[sync] Copied {src} -> {dst}")
         copied += 1
-    print(f"[sync] Completed (remote={remote_mode}, dry-run={args.dry_run}). Items processed: {copied}")
+    print(
+        f"[sync] Completed (remote={remote_mode}, dry-run={args.dry_run}). Items processed: {copied}"
+    )
     return 0 if copied else 4
 
 

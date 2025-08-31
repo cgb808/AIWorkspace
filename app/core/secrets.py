@@ -11,7 +11,9 @@ Strategy (priority order):
 If found, we also mirror the value into SUPABASE_KEY (used by llm_client)
 unless SUPABASE_KEY already set. Value cached for process lifetime.
 """
+
 from __future__ import annotations
+
 import os
 import threading
 from typing import Optional, Tuple
@@ -29,7 +31,9 @@ def get_supabase_indexer_service_key(refresh: bool = False) -> Optional[str]:
     return val
 
 
-def get_supabase_indexer_service_key_with_source(refresh: bool = False) -> Tuple[Optional[str], Optional[str]]:
+def get_supabase_indexer_service_key_with_source(
+    refresh: bool = False,
+) -> Tuple[Optional[str], Optional[str]]:
     global _cached_indexer_key, _cached_source
     if not refresh and _cached_indexer_key is not None:
         return _cached_indexer_key, _cached_source

@@ -15,25 +15,24 @@ Environment (optional overrides):
 Produces a PEFT adapter directory you can merge at inference or load with PEFT.
 """
 from __future__ import annotations
-import os, json, math
-from pathlib import Path
-from dataclasses import dataclass
 
-import torch
-from torch.utils.data import Dataset
-from transformers import (
-    AutoTokenizer,
-    AutoModelForCausalLM,
-    Trainer,
-    TrainingArguments,
-    DataCollatorForLanguageModeling,
-)
+import json
+import math
+import os
+from dataclasses import dataclass
+from pathlib import Path
+
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+from torch.utils.data import Dataset
+from transformers import (AutoModelForCausalLM, AutoTokenizer,
+                          DataCollatorForLanguageModeling, Trainer,
+                          TrainingArguments)
 
 try:
     import bitsandbytes as bnb  # noqa: F401
 except Exception:  # noqa: BLE001
     bnb = None  # type: ignore
+
 
 @dataclass
 class Rec:
@@ -41,6 +40,7 @@ class Rec:
     input: str
     output: str
     system: str | None = None
+
 
 class InstDataset(Dataset):
     def __init__(self, path: Path, tokenizer, max_len: int = 1024):
@@ -83,6 +83,7 @@ class InstDataset(Dataset):
         toks["labels"] = toks["input_ids"].clone()
         return {k: v.squeeze(0) for k, v in toks.items()}
 
+
 def main():
     model_name = os.getenv("GEMMA_MODEL", "google/gemma-2b-it")
     train_path = Path(os.getenv("ELI5_TRAIN_FILE", "data/eli5_gemma.jsonl"))
@@ -90,7 +91,9 @@ def main():
     qlora = os.getenv("QLORA", "0") == "1"
     load_8bit = os.getenv("LOAD_8BIT", "0") == "1"
     if not train_path.exists():
-        raise SystemExit(f"Training file {train_path} not found. Run prepare script first.")
+        raise SystemExit(
+            f"Training file {train_path} not found. Run prepare script first."
+        )
 
     tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
     if tokenizer.pad_token is None:
@@ -163,6 +166,7 @@ def main():
     trainer.train()
     trainer.save_model()
     print(f"Adapter saved to {out_dir}")
+
 
 if __name__ == "__main__":
     main()

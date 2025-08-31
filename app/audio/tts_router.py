@@ -2,6 +2,7 @@ import base64
 import os
 import subprocess
 import tempfile
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
@@ -11,7 +12,9 @@ PIPER_MODEL = os.getenv("PIPER_MODEL", "models/piper/en_US-amy-low.onnx")
 # Optional additional model paths (user can export these in .env)
 PIPER_JARVIS_MODEL = os.getenv("PIPER_JARVIS_MODEL", "models/piper/en_GB-alan-low.onnx")
 PIPER_ALAN_MODEL = os.getenv("PIPER_ALAN_MODEL", PIPER_JARVIS_MODEL)
-PIPER_SOUTHERN_MALE_MODEL = os.getenv("PIPER_SOUTHERN_MALE_MODEL", "models/piper/en_GB-southern_english_male-low.onnx")
+PIPER_SOUTHERN_MALE_MODEL = os.getenv(
+    "PIPER_SOUTHERN_MALE_MODEL", "models/piper/en_GB-southern_english_male-low.onnx"
+)
 
 VOICE_ALIASES = {
     # Treat these short names as aliases for clarity in the UI.
@@ -54,7 +57,9 @@ def tts(payload: TTSPayload):
     if payload.speed and abs(payload.speed - 1.0) > 1e-6:
         cmd += ["--length_scale", f"{1.0/payload.speed:.3f}"]
     try:
-        proc = subprocess.run(cmd, input=payload.text.encode("utf-8"), capture_output=True, timeout=120)
+        proc = subprocess.run(
+            cmd, input=payload.text.encode("utf-8"), capture_output=True, timeout=120
+        )
     except subprocess.TimeoutExpired:
         if os.path.exists(out_path):
             os.unlink(out_path)
@@ -62,7 +67,9 @@ def tts(payload: TTSPayload):
     if proc.returncode != 0:
         if os.path.exists(out_path):
             os.unlink(out_path)
-        raise HTTPException(500, detail=f"piper failed: {proc.stderr.decode('utf-8')[-300:]}")
+        raise HTTPException(
+            500, detail=f"piper failed: {proc.stderr.decode('utf-8')[-300:]}"
+        )
     try:
         with open(out_path, "rb") as f:
             audio_bytes = f.read()
@@ -73,7 +80,13 @@ def tts(payload: TTSPayload):
         raise HTTPException(400, detail="invalid format (expected 'wav' or 'base64')")
     b64 = base64.b64encode(audio_bytes).decode("ascii")
     # Standardize key to audio_base64; keep legacy audio_b64 for backward compatibility
-    return {"audio_base64": b64, "audio_b64": b64, "mime": "audio/wav", "bytes": len(audio_bytes), "model_path": model_path}
+    return {
+        "audio_base64": b64,
+        "audio_b64": b64,
+        "mime": "audio/wav",
+        "bytes": len(audio_bytes),
+        "model_path": model_path,
+    }
 
 
 @router.get("/tts/voices")

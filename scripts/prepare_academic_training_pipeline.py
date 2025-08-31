@@ -5,83 +5,82 @@ Trains the tiny tool controller and domain-specific Phi-3 specialists.
 """
 
 import json
-import os
-import subprocess
-import time
 from pathlib import Path
-from typing import Dict, List, Any
-import random
+from typing import Dict
+
 
 class AcademicTrainingPipeline:
     def __init__(self, base_path: str = "/home/cgbowen/AIWorkspace"):
         self.base_path = Path(base_path)
-        self.academic_path = self.base_path / "fine_tuning" / "datasets" / "academic_domains"
+        self.academic_path = (
+            self.base_path / "fine_tuning" / "datasets" / "academic_domains"
+        )
         self.models_path = self.base_path / "models"
         self.vendor_path = self.base_path / "vendor"
-        
+
         # Model configurations
         self.tiny_model_config = {
             "base_model": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
             "output_name": "tiny_tool_controller",
             "max_tokens": 512,
             "specialization": "tool_classification",
-            "target_latency": "< 100ms"
+            "target_latency": "< 100ms",
         }
-        
+
         self.phi3_configs = {
             "mathematics": {
                 "base_model": "microsoft/Phi-3-mini-4k-instruct",
                 "output_name": "phi3_mathematics_tutor",
-                "specialization": "mathematics_education"
+                "specialization": "mathematics_education",
             },
             "science": {
-                "base_model": "microsoft/Phi-3-mini-4k-instruct", 
+                "base_model": "microsoft/Phi-3-mini-4k-instruct",
                 "output_name": "phi3_science_tutor",
-                "specialization": "science_education"
+                "specialization": "science_education",
             },
             "english": {
                 "base_model": "microsoft/Phi-3-mini-4k-instruct",
-                "output_name": "phi3_english_tutor", 
-                "specialization": "english_education"
+                "output_name": "phi3_english_tutor",
+                "specialization": "english_education",
             },
             "history": {
                 "base_model": "microsoft/Phi-3-mini-4k-instruct",
                 "output_name": "phi3_history_tutor",
-                "specialization": "history_education"
+                "specialization": "history_education",
             },
             "art": {
                 "base_model": "microsoft/Phi-3-mini-4k-instruct",
                 "output_name": "phi3_art_tutor",
-                "specialization": "art_education"
+                "specialization": "art_education",
             },
             "foreign_language": {
                 "base_model": "microsoft/Phi-3-mini-4k-instruct",
                 "output_name": "phi3_language_tutor",
-                "specialization": "language_education"
-            }
+                "specialization": "language_education",
+            },
         }
 
     def prepare_tool_control_training(self):
         """Prepare consolidated tool control training data."""
         print("🔧 Preparing tool control training data...")
-        
+
         tool_control_path = self.base_path / "fine_tuning" / "datasets" / "tool_control"
         consolidated_file = tool_control_path / "consolidated_tool_control.jsonl"
-        
+
         # Read existing tool control data
         tool_examples = []
         for jsonl_file in tool_control_path.glob("*.jsonl"):
             if jsonl_file.name != "consolidated_tool_control.jsonl":
                 try:
-                    with open(jsonl_file, 'r', encoding='utf-8') as f:
+                    with open(jsonl_file, "r", encoding="utf-8") as f:
                         for line in f:
                             if line.strip():
                                 tool_examples.append(json.loads(line))
                 except Exception as e:
                     print(f"Warning: Could not read {jsonl_file}: {e}")
-        
+
         print(f"📊 Found {len(tool_examples)} tool control examples")
-        
+
         # Add domain awareness to tool control examples
         domain_aware_examples = []
         for example in tool_examples:
@@ -94,14 +93,14 @@ class AcademicTrainingPipeline:
                 example["domain_hint"] = "english"
             else:
                 example["domain_hint"] = "general"
-            
+
             domain_aware_examples.append(example)
-        
+
         # Write consolidated data
-        with open(consolidated_file, 'w', encoding='utf-8') as f:
+        with open(consolidated_file, "w", encoding="utf-8") as f:
             for example in domain_aware_examples:
-                f.write(json.dumps(example, ensure_ascii=False) + '\n')
-        
+                f.write(json.dumps(example, ensure_ascii=False) + "\n")
+
         print(f"✅ Consolidated tool control data: {consolidated_file}")
         return consolidated_file
 
@@ -221,11 +220,11 @@ if __name__ == "__main__":
     trainer = TinyToolControllerTrainer()
     trainer.train("{training_file}")
 '''
-        
+
         script_file = self.base_path / "scripts" / "train_tiny_tool_controller.py"
-        with open(script_file, 'w', encoding='utf-8') as f:
+        with open(script_file, "w", encoding="utf-8") as f:
             f.write(script_content)
-        
+
         return script_file
 
     def create_phi3_training_script(self, domain: str, config: Dict):
@@ -355,11 +354,11 @@ if __name__ == "__main__":
     trainer = Phi3DomainTrainer()
     trainer.train()
 '''
-        
+
         script_file = self.base_path / "scripts" / f"train_phi3_{domain}_specialist.py"
-        with open(script_file, 'w', encoding='utf-8') as f:
+        with open(script_file, "w", encoding="utf-8") as f:
             f.write(script_content)
-        
+
         return script_file
 
     def create_training_orchestrator(self):
@@ -490,38 +489,42 @@ if __name__ == "__main__":
     orchestrator = TrainingOrchestrator()
     orchestrator.run_full_pipeline()
 '''
-        
-        orchestrator_file = self.base_path / "scripts" / "run_academic_training_pipeline.py"
-        with open(orchestrator_file, 'w', encoding='utf-8') as f:
+
+        orchestrator_file = (
+            self.base_path / "scripts" / "run_academic_training_pipeline.py"
+        )
+        with open(orchestrator_file, "w", encoding="utf-8") as f:
             f.write(orchestrator_content)
-        
+
         return orchestrator_file
 
     def prepare_training_pipeline(self):
         """Prepare the complete training pipeline."""
         print("🎯 Preparing Academic Training Pipeline...")
-        
+
         # 1. Prepare tool control training
         tool_training_file = self.prepare_tool_control_training()
-        
+
         # 2. Create tiny model training script
         tiny_script = self.create_tiny_model_training_script(tool_training_file)
         print(f"✅ Created tiny controller training script: {tiny_script.name}")
-        
+
         # 3. Create Phi-3 specialist training scripts
         for domain, config in self.phi3_configs.items():
             specialist_script = self.create_phi3_training_script(domain, config)
-            print(f"✅ Created {domain} specialist training script: {specialist_script.name}")
-        
+            print(
+                f"✅ Created {domain} specialist training script: {specialist_script.name}"
+            )
+
         # 4. Create training orchestrator
         orchestrator_script = self.create_training_orchestrator()
         print(f"✅ Created training orchestrator: {orchestrator_script.name}")
-        
+
         # 5. Create summary
         self.create_training_summary()
-        
-        print(f"\\n🎉 Academic Training Pipeline Ready!")
-        print(f"🚀 Run: python scripts/run_academic_training_pipeline.py")
+
+        print("\\n🎉 Academic Training Pipeline Ready!")
+        print("🚀 Run: python scripts/run_academic_training_pipeline.py")
 
     def create_training_summary(self):
         """Create a summary of the training pipeline."""
@@ -531,58 +534,60 @@ if __name__ == "__main__":
                     "model": self.tiny_model_config["base_model"],
                     "purpose": "Fast tool classification",
                     "target_latency": self.tiny_model_config["target_latency"],
-                    "training_data": "consolidated_tool_control.jsonl"
+                    "training_data": "consolidated_tool_control.jsonl",
                 },
-                "phi3_specialists": {}
+                "phi3_specialists": {},
             },
             "training_sequence": [
                 "1. Train tiny tool controller for fast classification",
                 "2. Train domain-specific Phi-3 specialists",
                 "3. Create deployment configuration",
-                "4. Test integrated pipeline"
+                "4. Test integrated pipeline",
             ],
             "data_distribution": {},
             "expected_outcomes": {
                 "tiny_controller": "Sub-100ms tool classification",
                 "phi3_specialists": "Domain-aware educational responses",
-                "integration": "Seamless audio → tool → specialist pipeline"
-            }
+                "integration": "Seamless audio → tool → specialist pipeline",
+            },
         }
-        
+
         # Add specialist details
         for domain, config in self.phi3_configs.items():
             summary["pipeline_overview"]["phi3_specialists"][domain] = {
                 "model": config["base_model"],
                 "specialization": config["specialization"],
-                "output_name": config["output_name"]
+                "output_name": config["output_name"],
             }
-        
+
         # Read training manifest for data distribution
         try:
             manifest_file = self.academic_path / "training_manifest.json"
-            with open(manifest_file, 'r') as f:
+            with open(manifest_file, "r") as f:
                 manifest = json.load(f)
                 summary["data_distribution"] = {
-                    domain: info["example_count"] 
+                    domain: info["example_count"]
                     for domain, info in manifest["academic_domains"].items()
                 }
         except Exception as e:
             print(f"Warning: Could not read training manifest: {e}")
-        
+
         # Save summary
         summary_file = self.base_path / "docs" / "ACADEMIC_TRAINING_SUMMARY.md"
-        with open(summary_file, 'w', encoding='utf-8') as f:
+        with open(summary_file, "w", encoding="utf-8") as f:
             f.write("# Academic Training Pipeline Summary\\n\\n")
             f.write(json.dumps(summary, indent=2))
-        
+
         print(f"📋 Training summary saved: {summary_file}")
+
 
 def main():
     print("🎓 Academic Domain Training Pipeline Setup")
     print("=" * 50)
-    
+
     pipeline = AcademicTrainingPipeline()
     pipeline.prepare_training_pipeline()
+
 
 if __name__ == "__main__":
     main()

@@ -11,6 +11,7 @@ Flow:
 3. Embed batch
 4. Insert vectors (source='memory')
 5. Query retrieval merges memory/doc sources
+ 6. Persist tail offset (sidecar) for crash‑safe resume
 
 Env:
 ```
@@ -31,3 +32,4 @@ SQL union example:
 ```
 
 Future: async queue, summarization, PII redaction, TTL cleanup, metrics instrumentation.
+Current: retry/backoff (HTTP + DB), offset sidecar persistence, `--reset-offset` CLI flag.

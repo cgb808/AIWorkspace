@@ -22,9 +22,17 @@ Environment:
 Usage (example):
   python scripts/export_family_finetune_dataset.py
 """
+
 from __future__ import annotations
-import os, json, random, psycopg2, psycopg2.extras, pathlib
-from typing import List, Dict, Any
+
+import json
+import os
+import pathlib
+import random
+from typing import Any, Dict, List
+
+import psycopg2
+import psycopg2.extras
 
 TENANT_ID = int(os.getenv("EXPORT_TENANT_ID", "0"))
 USER_ID = os.getenv("EXPORT_USER_ID")
@@ -32,6 +40,7 @@ GROUP_ID = os.getenv("EXPORT_GROUP_ID")
 LIMIT = int(os.getenv("EXPORT_LIMIT", "500"))
 OUT_PATH = os.getenv("EXPORT_OUT", "data/finetune/family_dataset.jsonl")
 SEED = int(os.getenv("EXPORT_SEED", "42"))
+
 
 def _conn():
     dsn = os.getenv("DATABASE_URL")
@@ -45,10 +54,12 @@ def _conn():
         port=int(os.getenv("PG_PORT", "5432")),
     )
 
+
 def fetch_rows(cur, sql: str, params: tuple) -> List[Dict[str, Any]]:
     cur.execute(sql, params)
     rows = cur.fetchall() or []
     return [dict(r) for r in rows]
+
 
 def main():
     random.seed(SEED)
@@ -99,44 +110,67 @@ def main():
     examples: List[Dict[str, Any]] = []
     # Curated direct
     for row in curated:
-        examples.append({
-            "messages": [
-                {"role": "user", "content": row["prompt"]},
-                {"role": "assistant", "content": row["response"]},
-            ],
-            "meta": {"tags": row.get("tags"), "curated": True, **(row.get("meta") or {})},
-        })
+        examples.append(
+            {
+                "messages": [
+                    {"role": "user", "content": row["prompt"]},
+                    {"role": "assistant", "content": row["response"]},
+                ],
+                "meta": {
+                    "tags": row.get("tags"),
+                    "curated": True,
+                    **(row.get("meta") or {}),
+                },
+            }
+        )
     # Synthetic from memories
     for m in memories:
         content = m["content"]
         prompt = f"Recall context: {content}"
         response = "Acknowledged. This will inform future personalized responses."  # neutral ack
-        examples.append({
-            "messages": [
-                {"role": "user", "content": prompt},
-                {"role": "assistant", "content": response},
-            ],
-            "meta": {"source": "memory", "visibility": m.get("visibility"), "synthetic": True, "user_id": m.get("user_id"), "group_id": m.get("group_id")},
-        })
+        examples.append(
+            {
+                "messages": [
+                    {"role": "user", "content": prompt},
+                    {"role": "assistant", "content": response},
+                ],
+                "meta": {
+                    "source": "memory",
+                    "visibility": m.get("visibility"),
+                    "synthetic": True,
+                    "user_id": m.get("user_id"),
+                    "group_id": m.get("group_id"),
+                },
+            }
+        )
     # Synthetic from tagged chunks
     for ch in chunks:
         txt = ch["text"]
         tags = ch.get("tags") or []
-        prompt = f"Family context reference ({', '.join(tags)}): {txt[:200]}" if tags else f"Family context reference: {txt[:200]}"
-        response = "Noted. I'll use this shared family context when helpful."  # neutral ack
-        examples.append({
-            "messages": [
-                {"role": "user", "content": prompt},
-                {"role": "assistant", "content": response},
-            ],
-            "meta": {"source": "chunk", "tags": tags, "synthetic": True},
-        })
+        prompt = (
+            f"Family context reference ({', '.join(tags)}): {txt[:200]}"
+            if tags
+            else f"Family context reference: {txt[:200]}"
+        )
+        response = (
+            "Noted. I'll use this shared family context when helpful."  # neutral ack
+        )
+        examples.append(
+            {
+                "messages": [
+                    {"role": "user", "content": prompt},
+                    {"role": "assistant", "content": response},
+                ],
+                "meta": {"source": "chunk", "tags": tags, "synthetic": True},
+            }
+        )
 
     random.shuffle(examples)
     with open(OUT_PATH, "w") as f:
         for ex in examples:
             f.write(json.dumps(ex, ensure_ascii=False) + "\n")
     print(f"Exported {len(examples)} examples -> {OUT_PATH}")
+
 
 if __name__ == "__main__":
     main()

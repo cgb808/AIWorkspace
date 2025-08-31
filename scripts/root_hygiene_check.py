@@ -16,7 +16,9 @@ import os, sys, re, json
 ALLOWED_ROOT = {
     'README.md','COPILOT.md','Makefile','docker-compose.yml','docker-compose-fixed.yml','kong.yml',
     'package.json','package-lock.json','project-index.json','project-index-runtime.json','settings.json',
-    'pytest.ini','run_tests.sh','.gitignore'
+    'pytest.ini','run_tests.sh','.gitignore',
+    # Explicit developer reminder file (allowed):
+    'BACKUP_LARGE_FILES.md'
 }
 
 def suggest_target(name: str) -> str:

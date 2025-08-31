@@ -8,9 +8,10 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+
 def generate_implementation_summary():
     """Generate comprehensive summary of calculative fine-tuning implementation"""
-    
+
     summary = {
         "methodology": "Calculative Fine-tuning for Specialized AI Models",
         "version": "1.0 Standard Implementation",
@@ -22,8 +23,8 @@ def generate_implementation_summary():
                 "Prevents catastrophic forgetting",
                 "Enables systematic debugging",
                 "Builds coherent specialized capabilities",
-                "Resource-efficient training approach"
-            ]
+                "Resource-efficient training approach",
+            ],
         },
         "phase_methodology": {
             "phase_1": {
@@ -31,135 +32,139 @@ def generate_implementation_summary():
                 "purpose": "Establish foundational domain knowledge",
                 "learning_rate": "2e-4",
                 "epochs": "2 (reduced to 1 for resource efficiency)",
-                "focus": "Core concepts, fundamental principles, domain vocabulary"
+                "focus": "Core concepts, fundamental principles, domain vocabulary",
             },
             "phase_2": {
                 "name": "Teaching Methodology",
-                "purpose": "Develop instructional and explanatory capabilities", 
+                "purpose": "Develop instructional and explanatory capabilities",
                 "learning_rate": "1e-4",
                 "epochs": "1",
-                "focus": "Step-by-step reasoning, pedagogical approaches, clarity"
+                "focus": "Step-by-step reasoning, pedagogical approaches, clarity",
             },
             "phase_3": {
                 "name": "Communication Refinement",
                 "purpose": "Polish response style and communication patterns",
                 "learning_rate": "5e-5",
-                "epochs": "1", 
-                "focus": "Tone, clarity, student-appropriate language"
-            }
+                "epochs": "1",
+                "focus": "Tone, clarity, student-appropriate language",
+            },
         },
         "technical_implementation": {
             "base_model": "microsoft/Phi-3-mini-4k-instruct (via Ollama phi3:mini)",
             "memory_optimization": "4-bit quantization, gradient checkpointing",
             "hardware_requirements": "8GB VRAM minimum (RTX 3060 Ti tested)",
             "training_framework": "QLoRA with transformers, peft, bitsandbytes",
-            "dataset_format": "Instructional prompting with role-based context"
+            "dataset_format": "Instructional prompting with role-based context",
         },
         "dataset_preparation": {
             "mathematics": {
                 "sources": [
                     "Microsoft Orca Math (10,000 examples)",
-                    "MARIO AlphaMath (10,000 examples)"
+                    "MARIO AlphaMath (10,000 examples)",
                 ],
                 "total_examples": 20000,
-                "format": "[LEARNING_CONTEXT] Mathematics [LEARNING_OBJECTIVE] Clear problem solving"
+                "format": "[LEARNING_CONTEXT] Mathematics [LEARNING_OBJECTIVE] Clear problem solving",
             },
             "english": {
                 "sources": [
                     "WritingPrompts (10,000 examples)",
                     "SQuAD reading comprehension (5,000 examples)",
                     "RACE reading (5,000 examples)",
-                    "NarrativeQA (5,000 examples)"
+                    "NarrativeQA (5,000 examples)",
                 ],
                 "total_examples": 25000,
-                "format": "[LEARNING_CONTEXT] English Language Arts [LEARNING_OBJECTIVE] Analysis and explanation"
-            }
+                "format": "[LEARNING_CONTEXT] English Language Arts [LEARNING_OBJECTIVE] Analysis and explanation",
+            },
         },
         "routing_system": {
             "purpose": "Automatically select specialized model based on query content",
             "method": "Keyword analysis with confidence scoring",
             "specializations": ["mathematics", "english", "general"],
-            "context_formatting": "Subject-specific prompt templates"
+            "context_formatting": "Subject-specific prompt templates",
         },
         "validation_results": {
             "mathematics_model": {
                 "training_log": "models/ollama_mathematics_phi3/calculative_training_log_20250829_075730.json",
                 "examples_processed": 1000,
                 "phases_completed": 3,
-                "capability": "Step-by-step mathematical reasoning"
+                "capability": "Step-by-step mathematical reasoning",
             },
             "english_model": {
-                "training_log": "models/ollama_english_phi3/calculative_training_log_20250829_075921.json", 
+                "training_log": "models/ollama_english_phi3/calculative_training_log_20250829_075921.json",
                 "examples_processed": 1000,
                 "phases_completed": 3,
-                "capability": "Literary analysis and language understanding"
+                "capability": "Literary analysis and language understanding",
             },
-            "router_accuracy": "Successfully routes math and English queries to appropriate specialists"
+            "router_accuracy": "Successfully routes math and English queries to appropriate specialists",
         },
         "implementation_files": {
             "standard_calculative_finetune.py": "Official HuggingFace-based implementation",
-            "ollama_calculative_finetune.py": "Local Ollama-based simulation", 
+            "ollama_calculative_finetune.py": "Local Ollama-based simulation",
             "specialized_model_router.py": "Multi-model routing system",
             "standard_dataset_prep.py": "Dataset preparation and standardization",
-            "calculative_epoch_strategy.py": "Strategic framework documentation"
+            "calculative_epoch_strategy.py": "Strategic framework documentation",
         },
         "deployment_status": {
             "infrastructure": "Docker Compose with Ollama service (port 11435)",
             "models_available": ["phi3:mini", "mistral:7b", "gemma:2b"],
             "specialized_training": "Completed simulation for Mathematics and English",
             "router_status": "Operational with subject detection",
-            "next_phase": "Production deployment and performance optimization"
+            "next_phase": "Production deployment and performance optimization",
         },
         "resource_optimization": {
             "memory_usage": "25GB RAM available (83% system free)",
             "gpu_usage": "7.6GB VRAM available on RTX 3060 Ti",
             "docker_optimization": "30.64GB reclaimed through pruning",
-            "training_efficiency": "QLoRA enables 8GB VRAM training"
+            "training_efficiency": "QLoRA enables 8GB VRAM training",
         },
         "lessons_learned": [
             "Calculative epoch sequencing prevents knowledge degradation",
             "Resource optimization critical for consumer hardware",
             "Local Ollama deployment enables rapid prototyping",
             "Subject-specific prompt formatting improves specialization",
-            "Multi-model routing enables task-appropriate responses"
+            "Multi-model routing enables task-appropriate responses",
         ],
         "future_enhancements": [
             "Additional subject specializations (Science, History, etc.)",
             "Real-time fine-tuning with user feedback",
             "Performance benchmarking against standard models",
             "Integration with RAG for dynamic knowledge updates",
-            "Production-scale deployment optimization"
-        ]
+            "Production-scale deployment optimization",
+        ],
     }
-    
+
     return summary
+
 
 def main():
     """Generate and save implementation summary"""
     print("📊 GENERATING CALCULATIVE FINE-TUNING IMPLEMENTATION SUMMARY")
     print("=" * 60)
-    
+
     summary = generate_implementation_summary()
-    
+
     # Save summary
     output_file = Path("docs/CALCULATIVE_FINETUNE_IMPLEMENTATION.json")
     output_file.parent.mkdir(exist_ok=True)
-    
-    with open(output_file, 'w') as f:
+
+    with open(output_file, "w") as f:
         json.dump(summary, f, indent=2)
-    
+
     print(f"✅ Implementation summary saved to: {output_file}")
-    
+
     # Print key achievements
-    print(f"\n🎯 KEY ACHIEVEMENTS:")
+    print("\n🎯 KEY ACHIEVEMENTS:")
     print(f"   📚 Methodology: {summary['methodology']}")
     print(f"   🔧 Phases: {len(summary['phase_methodology'])} calculative phases")
-    print(f"   📊 Datasets: {summary['dataset_preparation']['mathematics']['total_examples']:,} math + {summary['dataset_preparation']['english']['total_examples']:,} english examples")
-    print(f"   🤖 Models: Mathematics & English specializations")
-    print(f"   🚀 Router: Automatic subject detection and routing")
-    print(f"   💾 Resources: Optimized for 8GB VRAM constraint")
-    
-    print(f"\n🎉 CALCULATIVE FINE-TUNING METHODOLOGY: STANDARD ESTABLISHED!")
+    print(
+        f"   📊 Datasets: {summary['dataset_preparation']['mathematics']['total_examples']:,} math + {summary['dataset_preparation']['english']['total_examples']:,} english examples"
+    )
+    print("   🤖 Models: Mathematics & English specializations")
+    print("   🚀 Router: Automatic subject detection and routing")
+    print("   💾 Resources: Optimized for 8GB VRAM constraint")
+
+    print("\n🎉 CALCULATIVE FINE-TUNING METHODOLOGY: STANDARD ESTABLISHED!")
+
 
 if __name__ == "__main__":
     main()

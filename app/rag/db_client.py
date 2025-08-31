@@ -1,10 +1,13 @@
 """
 DB Client for Vector Search (pgvector, Timescale)
 """
-from typing import List, Dict, Any
+
+import os
+from typing import Any, Dict, List
+
 import psycopg2
 import psycopg2.extras
-import os
+
 
 class DBClient:
     def __init__(self):
@@ -31,7 +34,7 @@ class DBClient:
                     user=os.getenv("PG_USER", "postgres"),
                     password=os.getenv("PG_PASSWORD", "password"),
                     host=os.getenv("PG_HOST", "localhost"),
-                    port=int(os.getenv("PG_PORT", "5432"))
+                    port=int(os.getenv("PG_PORT", "5432")),
                 )
             self.conn.autocommit = True
             search_path = os.getenv("DB_SEARCH_PATH")
@@ -40,7 +43,9 @@ class DBClient:
                     try:
                         cur.execute(f"SET search_path TO {search_path}")
                     except Exception as e:  # pragma: no cover
-                        os.environ["DB_CLIENT_LAST_ERROR"] = f"search_path error: {e}"  # soft warning
+                        os.environ["DB_CLIENT_LAST_ERROR"] = (
+                            f"search_path error: {e}"  # soft warning
+                        )
         except Exception as e:  # pragma: no cover - defensive
             self.conn = None  # type: ignore
             # Keep a soft failure path; retrieval will yield []
@@ -59,14 +64,16 @@ class DBClient:
     def __exit__(self, exc_type: object, exc: object, tb: object) -> None:
         self.close()
 
-    def vector_search(self, embedding: List[float], top_k: int = 5) -> List[Dict[str, Any]]:
+    def vector_search(
+        self, embedding: List[float], top_k: int = 5
+    ) -> List[Dict[str, Any]]:
         """Query pgvector for top-k similar documents.
 
-        Returns list of dicts: {id, text, metadata, distance}
-        Score is deliberately NOT computed here so it can be derived conceptually
-        at response time based on current recency/weighting strategies.
-    Assumes table schema: id, chunk, metadata JSONB (nullable), embedding vector.
-    (Earlier code referenced a 'text' column; unified on 'chunk').
+            Returns list of dicts: {id, text, metadata, distance}
+            Score is deliberately NOT computed here so it can be derived conceptually
+            at response time based on current recency/weighting strategies.
+        Assumes table schema: id, chunk, metadata JSONB (nullable), embedding vector.
+        (Earlier code referenced a 'text' column; unified on 'chunk').
         """
         if not embedding or self.conn is None:
             return []
@@ -84,7 +91,7 @@ class DBClient:
             return [
                 {
                     "id": r.get("id"),
-            "text": r.get("chunk"),
+                    "text": r.get("chunk"),
                     "metadata": r.get("metadata"),
                     "distance": r.get("distance") or 0.0,
                 }

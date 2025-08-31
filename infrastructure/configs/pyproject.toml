@@ -5,6 +5,10 @@ warn_redundant_casts = true
 warn_unused_ignores = true
 show_error_codes = true
 disable_error_code = "attr-defined"
+exclude = [
+	"ZenGlowAIWorkshop/scripts/memory_rag_bridge.py",
+	"scripts/memory_rag_bridge.py"
+]
 
 [[tool.mypy.overrides]]
 module = ["fastapi.*", "pydantic.*", "redis", "msgpack", "psycopg2", "app.health.system_metrics", "prometheus_client"]

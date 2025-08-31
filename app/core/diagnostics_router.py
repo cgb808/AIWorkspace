@@ -3,13 +3,14 @@
 Endpoints provide quick visibility when "nothing works" without needing
 external shell access. They intentionally avoid heavy dependencies.
 """
+
 from __future__ import annotations
 
 import importlib
 import os
 import socket
 import time
-from typing import Dict, Any
+from typing import Any, Dict
 
 from fastapi import APIRouter
 
@@ -84,5 +85,6 @@ def quick_summary():
         except Exception:
             checks["db_tcp"] = {"ok": False, "error": "parse_failed"}
     return {"env": env, "imports": imports, "checks": checks}
+
 
 __all__ = ["router"]

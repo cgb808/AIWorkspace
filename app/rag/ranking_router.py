@@ -7,26 +7,29 @@ Integrates:
 
 Provides /rag/query2 endpoint returning scored results with feature metadata.
 """
+
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
-from typing import List, Any, Dict
+import logging
 import os
 import time
-import psycopg2  # type: ignore
-import logging
+from typing import Any, Dict, List
 
-from .feature_assembler import assemble_features, Candidate, FEATURE_SCHEMA_VERSION
+import psycopg2  # type: ignore
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Field
+
+from app.core.redis_cache import cache_get_msgpack  # type: ignore
+from app.core.redis_cache import (cache_rag_query_result, cache_set_msgpack,
+                                  get_cached_rag_query)
+
+from .feature_assembler import (FEATURE_SCHEMA_VERSION, Candidate,
+                                assemble_features)
 from .ltr import GLOBAL_LTR_MODEL
-from app.core.redis_cache import (
-    get_cached_rag_query,
-    cache_rag_query_result,
-    cache_get_msgpack,
-    cache_set_msgpack,
-)  # type: ignore
+
 try:
-    from app.health.health_router import RAG_QUERY_COUNT, RAG_QUERY_LATENCY  # type: ignore
+    from app.health.health_router import RAG_QUERY_COUNT  # type: ignore
+    from app.health.health_router import RAG_QUERY_LATENCY
 except Exception:  # pragma: no cover
     RAG_QUERY_COUNT = None
     RAG_QUERY_LATENCY = None
@@ -37,7 +40,9 @@ DEFAULT_TOP_K = int(os.getenv("RAG_TOP_K_DEFAULT", "10"))
 MAX_TOP_K = int(os.getenv("RAG_TOP_K_MAX", "200"))
 
 # Fusion weight override / versioning (dynamic updates via endpoint)
-_FUSION_WEIGHT_OVERRIDE: tuple[float, float] | None = None  # (ltr, conceptual) raw values
+_FUSION_WEIGHT_OVERRIDE: tuple[float, float] | None = (
+    None  # (ltr, conceptual) raw values
+)
 _FUSION_WEIGHT_VERSION: int = 1
 
 
@@ -102,19 +107,18 @@ def _pg_connect():
 def _embed_query(text: str) -> List[float]:
     # Placeholder: swap with Embedder directly to avoid main import cycle.
     from app.rag.embedder import Embedder  # local import to prevent circular
+
     emb = Embedder()
     return emb.embed(text)
 
 
 def _similarity_search_pgvector(query_vec: List[float], k: int) -> List[Candidate]:
-    sql = (
-        """
+    sql = """
         SELECT id, chunk, embedding <-> %s::vector AS dist, source
         FROM doc_embeddings
         ORDER BY embedding <-> %s::vector
         LIMIT %s
         """
-    )
     try:
         with _pg_connect() as conn:
             with conn.cursor() as cur:
@@ -138,7 +142,9 @@ def _similarity_search_pgvector(query_vec: List[float], k: int) -> List[Candidat
     return cands
 
 
-def _similarity_search_supabase(query_vec: List[float], k: int) -> List[Candidate]:  # pragma: no cover - stub
+def _similarity_search_supabase(
+    query_vec: List[float], k: int
+) -> List[Candidate]:  # pragma: no cover - stub
     # Placeholder for Supabase RPC-based retrieval; returns empty list for now.
     # Future: call postgrest RPC with embedding vector & limit.
     return []
@@ -165,7 +171,9 @@ async def rag_query2(payload: Query2Payload) -> Dict[str, Any]:
         cached = None  # Redis unavailable; proceed without cache
     if cached:
         fw = cached.get("fusion_weights") if isinstance(cached, dict) else None
-        cached_version = cached.get("fusion_weights_version") if isinstance(cached, dict) else None
+        cached_version = (
+            cached.get("fusion_weights_version") if isinstance(cached, dict) else None
+        )
         if (
             fw
             and cached_version == cur_w_version
@@ -277,7 +285,9 @@ async def rag_query2(payload: Query2Payload) -> Dict[str, Any]:
 
     enriched = []
     fusion_start = time.perf_counter()
-    for idx, (ltr_raw, ltr_n, feats, concept) in enumerate(zip(ltr_scores, ltr_scores_norm, feature_matrix, conceptual_scores)):
+    for idx, (ltr_raw, ltr_n, feats, concept) in enumerate(
+        zip(ltr_scores, ltr_scores_norm, feature_matrix, conceptual_scores)
+    ):
         chunk_id = chunk_ids[idx] if idx < len(chunk_ids) else None
         distance = distances[idx] if idx < len(distances) else None
         text_preview = texts[idx][:300] if idx < len(texts) else ""
@@ -310,6 +320,7 @@ async def rag_query2(payload: Query2Payload) -> Dict[str, Any]:
     # Record lightweight stats
     try:
         from app.health.health_router import record_query_stats  # type: ignore
+
         record_query_stats(elapsed, cache_hit_type)
     except Exception:
         pass

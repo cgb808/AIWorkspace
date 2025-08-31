@@ -3,7 +3,12 @@
 Writes to project-index-runtime.json and updates model registry via health.register_model.
 """
 from __future__ import annotations
-import json, os, sys, hashlib, time
+
+import hashlib
+import json
+import os
+import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -13,7 +18,7 @@ OUT = ROOT / "project-index-runtime.json"
 # Lightweight dynamic import for registry population
 sys.path.insert(0, str(ROOT))
 try:
-    from app.health.health_router import register_model, get_model_registry
+    from app.health.health_router import get_model_registry, register_model
 except Exception as e:  # noqa: BLE001
     print(f"Could not import health router: {e}", file=sys.stderr)
     register_model = None  # type: ignore
@@ -25,10 +30,11 @@ PY_SUFFIX = ".py"
 extra_excludes = set()
 env_excludes = os.getenv("INDEX_EXCLUDE")
 if env_excludes:
-    for token in env_excludes.split(','):
+    for token in env_excludes.split(","):
         token = token.strip()
         if token:
             extra_excludes.add(token)
+
 
 def should_skip(p: Path) -> bool:
     if any(part in EXCLUDE_DIRS for part in p.parts):
@@ -39,6 +45,7 @@ def should_skip(p: Path) -> bool:
         if pat and rel_parts and rel_parts[0] == pat:
             return True
     return False
+
 
 modules = []
 for path in APP.rglob("*.py"):

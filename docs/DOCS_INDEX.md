@@ -12,7 +12,8 @@ Central index of major documentation directories and guides.
 - `docs/deployment/PRODUCTION_DEPLOYMENT.md` – Deployment & Kong gateway guide.
 - `docs/security/RLS_POLICY_REFERENCE.md` – Row-Level Security policy design.
 - `docs/workspace/REMOTE_WORKSPACE_LAYOUT.md` – Recommended remote workspace layout.
-- `docs/integration/MCP_RAG_INTEGRATION.md` – Memory MCP ↔ RAG ingestion bridge.
+- `docs/integration/MCP_RAG_INTEGRATION.md` – Memory MCP ↔ RAG ingestion bridge (now includes offset persistence + retries).
+- `docs/integration/RAG_REPLAY_PIPELINE.md` – Offline batch (MessagePack) replay & watch pipeline.
  - `COPILOT.md` – AI terminal co-pilot SOP.
 
 ## Documentation Directories
@@ -36,4 +37,4 @@ Central index of major documentation directories and guides.
 - Deprecated docs: move to `archive/` and note replacement.
 - Root kept lean: only `README.md` remains (other docs now under `docs/`).
 
-Last updated: 2025-08-30
+Last updated: 2025-08-31

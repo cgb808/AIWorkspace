@@ -1,8 +1,8 @@
 ###########################
 # Runtime / Core API
 ###########################
-fastapi
-uvicorn
+fastapi==0.110.0
+uvicorn[standard]==0.29.0
 psycopg2-binary
 redis
 msgpack
@@ -11,6 +11,7 @@ pydantic
 python-multipart
 prometheus-client
 psutil
+pytest
 
 ###########################
 # RAG / Model & ML Stack

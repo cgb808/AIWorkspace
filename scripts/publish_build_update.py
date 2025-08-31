@@ -3,15 +3,17 @@
 Usage (CLI):
   python scripts/publish_build_update.py --content "New model deployed" --artifact models/model.bin
 """
+
 from __future__ import annotations
 
 import argparse
-import os
-import redis  # type: ignore
-import msgpack  # type: ignore
 import logging
+import os
 from datetime import datetime, timezone
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
+
+import msgpack  # type: ignore
+import redis  # type: ignore
 
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
@@ -25,7 +27,9 @@ if not log.handlers:
 
 def get_redis_client():
     try:
-        return redis.Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD, socket_timeout=5)
+        return redis.Redis(
+            host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD, socket_timeout=5
+        )
     except Exception as e:  # noqa: BLE001
         log.error(f"Redis connection error: {e}")
         raise
@@ -51,7 +55,9 @@ def publish_build_update(content: str, extra: Optional[Dict[str, Any]] = None) -
 
 
 def _parse_args():
-    p = argparse.ArgumentParser(description="Publish build/update notification over Redis Pub/Sub")
+    p = argparse.ArgumentParser(
+        description="Publish build/update notification over Redis Pub/Sub"
+    )
     p.add_argument("--content", required=True, help="Main update content message")
     p.add_argument("--artifact", help="Optional artifact path")
     p.add_argument("--meta", nargs="*", help="Extra key=value pairs")

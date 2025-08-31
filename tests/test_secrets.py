@@ -1,13 +1,10 @@
 """Tests for secrets retrieval (environment & vault fallback)."""
-import os
-import sys
-from types import SimpleNamespace
 
-from app.core.secrets import (
-    get_supabase_indexer_service_key,
-    get_supabase_indexer_service_key_with_source,
-    SECRET_NAME,  # type: ignore[attr-defined]
-)
+import sys
+
+from app.core.secrets import SECRET_NAME  # type: ignore[attr-defined]
+from app.core.secrets import (get_supabase_indexer_service_key,
+                              get_supabase_indexer_service_key_with_source)
 
 
 class DummyCursor:

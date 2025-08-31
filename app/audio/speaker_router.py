@@ -7,12 +7,20 @@ Provides endpoints to:
 Uses Resemblyzer for voice embeddings if available; falls back to a zero vector.
 Embeddings stored in memory for now; future: persist to DB (users/user_embeddings).
 """
+
 from __future__ import annotations
-from fastapi import APIRouter, UploadFile, File, HTTPException, Form
-from pydantic import BaseModel
+
+import base64
+import io
+import json
+import os
+import re
+import time
 from typing import Dict, List
+
 import numpy as np
-import io, os, re, json, pathlib, shutil, time, base64
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from pydantic import BaseModel
 
 SPEAKER_AUDIO_DIR = os.getenv("SPEAKER_AUDIO_DIR", "data/speakers")
 os.makedirs(SPEAKER_AUDIO_DIR, exist_ok=True)
@@ -21,6 +29,7 @@ SPEAKER_MIN_SIM = float(os.getenv("SPEAKER_MIN_SIM", "0.6"))
 
 try:  # optional dependency
     from resemblyzer import VoiceEncoder, preprocess_wav
+
     _encoder: VoiceEncoder | None = VoiceEncoder()
 except Exception:  # pragma: no cover - optional path
     _encoder = None
@@ -29,22 +38,27 @@ router = APIRouter(prefix="/audio", tags=["audio-speaker"])  # grouped under aud
 
 _SPEAKER_DB: Dict[str, Dict[str, object]] = {}
 
+
 def _safe_name(name: str) -> str:
     return re.sub(r"[^a-zA-Z0-9_-]", "_", name.strip())[:64]
 
+
 def _profile_path(name: str) -> str:
     return os.path.join(SPEAKER_AUDIO_DIR, f"{_safe_name(name)}.wav")
+
 
 def _store_profile_index():  # lightweight persistence
     idx_path = os.path.join(SPEAKER_AUDIO_DIR, "profiles.json")
     try:
         serial = {
-            n: {k: v for k, v in d.items() if k != "embedding"} for n, d in _SPEAKER_DB.items()
+            n: {k: v for k, v in d.items() if k != "embedding"}
+            for n, d in _SPEAKER_DB.items()
         }
         with open(idx_path, "w") as f:
             json.dump(serial, f)
     except Exception:
         pass
+
 
 def _load_profile_index():
     idx_path = os.path.join(SPEAKER_AUDIO_DIR, "profiles.json")
@@ -67,6 +81,7 @@ def _load_profile_index():
     except Exception:
         pass
 
+
 _load_profile_index()
 
 
@@ -77,6 +92,7 @@ class SpeakerList(BaseModel):
 @router.get("/speakers", response_model=SpeakerList)
 def list_speakers():
     return SpeakerList(speakers=sorted(_SPEAKER_DB.keys()))
+
 
 @router.get("/speakers/meta")
 def list_speakers_meta():
@@ -109,7 +125,12 @@ async def enroll_speaker(name: str = Form(...), file: UploadFile = File(...)):
     }
     _SPEAKER_DB[safe] = record
     _store_profile_index()
-    return {"enrolled": safe, "audio_path": dest, "embedding_dim": int(record["embedding"].shape[0]), "warning": None if _encoder else "resemblyzer not installed; zero vector used"}
+    return {
+        "enrolled": safe,
+        "audio_path": dest,
+        "embedding_dim": int(record["embedding"].shape[0]),
+        "warning": None if _encoder else "resemblyzer not installed; zero vector used",
+    }
 
 
 @router.post("/speaker/identify")
@@ -136,30 +157,54 @@ async def identify_speaker(file: UploadFile = File(...)):
             best_score = sim
             best_name = name
     matched = best_score >= SPEAKER_MIN_SIM
-    return {"identified": best_name if matched else None, "similarity": best_score, "threshold": SPEAKER_MIN_SIM}
+    return {
+        "identified": best_name if matched else None,
+        "similarity": best_score,
+        "threshold": SPEAKER_MIN_SIM,
+    }
+
 
 def _run_xtts(text: str, ref_path: str):
-    from .xtts_router import XTTS_SCRIPT, XTTS_MODEL_DIR  # lazy import
+    from .xtts_router import XTTS_MODEL_DIR, XTTS_SCRIPT  # lazy import
+
     if not os.path.exists(XTTS_SCRIPT):
         raise HTTPException(500, detail="xtts script not found")
-    import tempfile, subprocess, base64
+    import subprocess
+    import tempfile
+
     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as out_f:
         out_path = out_f.name
-    cmd = ["python", XTTS_SCRIPT, "--model_dir", XTTS_MODEL_DIR, "--ref", ref_path, "--text", text, "--out", out_path]
+    cmd = [
+        "python",
+        XTTS_SCRIPT,
+        "--model_dir",
+        XTTS_MODEL_DIR,
+        "--ref",
+        ref_path,
+        "--text",
+        text,
+        "--out",
+        out_path,
+    ]
     try:
         proc = subprocess.run(cmd, capture_output=True, timeout=180)
     except subprocess.TimeoutExpired:
         raise HTTPException(504, detail="xtts inference timeout")
     if proc.returncode != 0:
-        raise HTTPException(500, detail=f"xtts failed: {proc.stderr.decode('utf-8', 'ignore')[-300:]}")
+        raise HTTPException(
+            500, detail=f"xtts failed: {proc.stderr.decode('utf-8', 'ignore')[-300:]}"
+        )
     try:
-        with open(out_path, 'rb') as f:
+        with open(out_path, "rb") as f:
             audio = f.read()
     finally:
         if os.path.exists(out_path):
-            try: os.unlink(out_path)
-            except Exception: pass
-    return base64.b64encode(audio).decode('ascii'), len(audio)
+            try:
+                os.unlink(out_path)
+            except Exception:
+                pass
+    return base64.b64encode(audio).decode("ascii"), len(audio)
+
 
 @router.post("/speaker/identify_clone")
 async def identify_and_clone(text: str = Form(...), file: UploadFile = File(...)):
@@ -178,7 +223,13 @@ async def identify_and_clone(text: str = Form(...), file: UploadFile = File(...)
     if not isinstance(ref_path, str) or not os.path.exists(ref_path):
         raise HTTPException(500, detail="reference_audio_missing")
     b64, size = _run_xtts(text, ref_path)
-    return {"speaker": speaker, "audio_base64": b64, "bytes": size, "similarity": id_result.get("similarity")}
+    return {
+        "speaker": speaker,
+        "audio_base64": b64,
+        "bytes": size,
+        "similarity": id_result.get("similarity"),
+    }
+
 
 @router.post("/speaker/clone_profile")
 async def clone_by_profile(text: str = Form(...), speaker: str = Form(...)):

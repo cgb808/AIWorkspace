@@ -18,7 +18,7 @@ Feature Groups Implemented (cheap set):
     - pronoun_early_count (this/that/it/these/those first 160 chars)
     - acronym_count (ALLCAPS 2-6)
     - capitalized_entity_count (Capitalized >=4 letters)
-    - numeric_unit_count (\d+(ms|gb|mb|%|s|sec|secs|minutes|hrs|x))
+  - numeric_unit_count (\\d+(ms|gb|mb|%|s|sec|secs|minutes|hrs|x))
     - todo_marker (0/1)
     - placeholder_marker (0/1 for <...> or {...})
   ratios:

@@ -16,15 +16,17 @@ Future Extensions:
   - Confidence calibration using historical success metrics
   - Feedback loop: client can POST outcome quality to /switchr/feedback
 """
+
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
-import re
-import time
 import importlib
 import logging
+import re
+import time
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter
+from pydantic import BaseModel, Field
 
 log = logging.getLogger("app.switchr")
 router = APIRouter(prefix="/switchr", tags=["switchr-router"])
@@ -35,8 +37,12 @@ class RouteRequest(BaseModel):
     text: str = Field(..., description="User query / utterance")
     allow_tools: bool = Field(True, description="Whether tool use is permitted")
     prefer: Optional[str] = Field(None, description="Hard override backend preference")
-    require_reasoning: bool = Field(False, description="Force deeper reasoning model (Leonardo)")
-    classify_tools: bool = Field(False, description="Attempt tiny tool classification if available")
+    require_reasoning: bool = Field(
+        False, description="Force deeper reasoning model (Leonardo)"
+    )
+    classify_tools: bool = Field(
+        False, description="Attempt tiny tool classification if available"
+    )
 
 
 class ToolClassification(BaseModel):
@@ -77,12 +83,20 @@ def _load_tiny_controller():
     return _tiny_instance
 
 
-CODE_PATTERNS = re.compile(r"\b(def |class |import |function|SELECT |INSERT |UPDATE |{ |};)" , re.IGNORECASE)
-MATH_PATTERNS = re.compile(r"\b(integral|derivative|theorem|matrix|algebra|proof|equation)\b", re.IGNORECASE)
-SCIENCE_PATTERNS = re.compile(r"\b(cell|protein|quantum|neuron|biology|physics)\b", re.IGNORECASE)
+CODE_PATTERNS = re.compile(
+    r"\b(def |class |import |function|SELECT |INSERT |UPDATE |{ |};)", re.IGNORECASE
+)
+MATH_PATTERNS = re.compile(
+    r"\b(integral|derivative|theorem|matrix|algebra|proof|equation)\b", re.IGNORECASE
+)
+SCIENCE_PATTERNS = re.compile(
+    r"\b(cell|protein|quantum|neuron|biology|physics)\b", re.IGNORECASE
+)
 
 
-def _heuristic_backend(text: str, require_reasoning: bool) -> tuple[str, float, list[str]]:
+def _heuristic_backend(
+    text: str, require_reasoning: bool
+) -> tuple[str, float, list[str]]:
     reasons: list[str] = []
     lower = text.lower()
     length = len(text.split())
@@ -117,7 +131,7 @@ def _heuristic_backend(text: str, require_reasoning: bool) -> tuple[str, float, 
         reasons.append("analysis_keywords")
 
     # Light preference for edge if trivial Q
-    if length < 8 and '?' in text:
+    if length < 8 and "?" in text:
         score_edge += 0.8
         reasons.append("trivial_question")
 
@@ -143,7 +157,9 @@ async def route(req: RouteRequest) -> RouteDecision:
         backend = req.prefer
         confidence = 0.99
     else:
-        backend, confidence, heur_reasons = _heuristic_backend(req.text, req.require_reasoning)
+        backend, confidence, heur_reasons = _heuristic_backend(
+            req.text, req.require_reasoning
+        )
         reasons.extend(heur_reasons)
 
     tool_cls: ToolClassification | None = None
@@ -158,13 +174,19 @@ async def route(req: RouteRequest) -> RouteDecision:
                     raw = await controller.classify(req.text)  # type: ignore[attr-defined]
                 else:
                     raw = {"domain": "unknown", "tools": []}
-                domain = raw.get("domain", "unknown") if isinstance(raw, dict) else "unknown"
+                domain = (
+                    raw.get("domain", "unknown") if isinstance(raw, dict) else "unknown"
+                )
                 tools = raw.get("tools", []) if isinstance(raw, dict) else []
                 tool_cls = ToolClassification(
                     domain=domain,
                     tools=tools,
-                    confidence=float(raw.get("confidence", 0.6)) if isinstance(raw, dict) else 0.5,
-                    raw=raw if isinstance(raw, dict) else {"raw": str(raw)}
+                    confidence=(
+                        float(raw.get("confidence", 0.6))
+                        if isinstance(raw, dict)
+                        else 0.5
+                    ),
+                    raw=raw if isinstance(raw, dict) else {"raw": str(raw)},
                 )
                 reasons.append(f"tool_domain:{domain}")
             except Exception as e:  # noqa: BLE001

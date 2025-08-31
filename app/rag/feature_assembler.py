@@ -15,10 +15,12 @@ Current minimal features (schema v1):
 Backwards compatibility: earlier draft (schema 0.1) used [bias, distance_inv, text_len_log, query_len_log].
 We preserve a compatibility function to map previous ordering when needed.
 """
+
 from __future__ import annotations
-from dataclasses import dataclass
-from typing import List, Dict, Any, Tuple
+
 import math
+from dataclasses import dataclass
+from typing import Any, Dict, List, Tuple
 
 FEATURE_SCHEMA_VERSION = 1  # integer for easier comparison
 
@@ -36,7 +38,9 @@ def _similarity_from_distance(d: float) -> float:
     return 1.0 / (1.0 + d)
 
 
-def assemble_features(query: str, candidates: List[Candidate]) -> Tuple[List[List[float]], List[str]]:
+def assemble_features(
+    query: str, candidates: List[Candidate]
+) -> Tuple[List[List[float]], List[str]]:
     """Return (feature_matrix, feature_names) for schema v1."""
     feature_names = ["similarity_primary", "log_length", "bias"]
     matrix: List[List[float]] = []
@@ -48,7 +52,9 @@ def assemble_features(query: str, candidates: List[Candidate]) -> Tuple[List[Lis
     return matrix, feature_names
 
 
-def assemble_features_legacy(query: str, candidates: List[Candidate]) -> Tuple[List[List[float]], List[str]]:  # pragma: no cover (compat path)
+def assemble_features_legacy(
+    query: str, candidates: List[Candidate]
+) -> Tuple[List[List[float]], List[str]]:  # pragma: no cover (compat path)
     """Legacy draft feature layout (schema 0.1)."""
     feature_names = ["bias", "distance_inv", "text_len_log", "query_len_log"]
     q_len_log = math.log(max(1, len(query)))

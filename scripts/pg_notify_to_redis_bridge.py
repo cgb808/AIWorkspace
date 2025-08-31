@@ -34,13 +34,14 @@ Reliability Considerations:
 Usage:
   python scripts/pg_notify_to_redis_bridge.py
 """
+
 from __future__ import annotations
 
-import os
-import time
 import json
 import logging
+import os
 import select
+import time
 from datetime import datetime, timezone
 from typing import List
 
@@ -48,7 +49,9 @@ import psycopg2  # type: ignore
 import psycopg2.extensions  # type: ignore
 import redis  # type: ignore
 
-logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(levelname)s %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="[%(asctime)s] %(levelname)s %(message)s"
+)
 logger = logging.getLogger("pg_notify_bridge")
 
 

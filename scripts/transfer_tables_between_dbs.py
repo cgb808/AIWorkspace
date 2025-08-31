@@ -15,7 +15,10 @@ Notes:
   - Skips sequences auto (IDENTITY) because COPY preserves values; optionally resets.
 """
 from __future__ import annotations
-import argparse, psycopg2, sys
+
+import argparse
+
+import psycopg2
 from psycopg2 import sql
 
 
@@ -24,7 +27,11 @@ def open_conn(dsn: str):
 
 
 def truncate(cur, table: str):
-    cur.execute(sql.SQL("TRUNCATE TABLE {} RESTART IDENTITY CASCADE").format(sql.Identifier(table)))
+    cur.execute(
+        sql.SQL("TRUNCATE TABLE {} RESTART IDENTITY CASCADE").format(
+            sql.Identifier(table)
+        )
+    )
 
 
 def copy_table(src_conn, tgt_conn, table: str):
@@ -41,6 +48,7 @@ def copy_table(src_conn, tgt_conn, table: str):
             return
         truncate(t, table)
         import io
+
         buf = io.BytesIO()
         s.copy_expert(f"COPY {table} TO STDOUT WITH (FORMAT binary)", buf)
         buf.seek(0)
@@ -50,20 +58,22 @@ def copy_table(src_conn, tgt_conn, table: str):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--source', required=True, help='Source DSN')
-    ap.add_argument('--target', required=True, help='Target DSN')
-    ap.add_argument('--tables', required=True, help='Comma list of tables to transfer')
+    ap.add_argument("--source", required=True, help="Source DSN")
+    ap.add_argument("--target", required=True, help="Target DSN")
+    ap.add_argument("--tables", required=True, help="Comma list of tables to transfer")
     args = ap.parse_args()
 
-    tables = [t.strip() for t in args.tables.split(',') if t.strip()]
+    tables = [t.strip() for t in args.tables.split(",") if t.strip()]
     src = open_conn(args.source)
     tgt = open_conn(args.target)
     try:
         for tbl in tables:
             copy_table(src, tgt, tbl)
-        print('Done.')
+        print("Done.")
     finally:
-        src.close(); tgt.close()
+        src.close()
+        tgt.close()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

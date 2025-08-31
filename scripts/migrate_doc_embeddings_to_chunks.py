@@ -10,7 +10,11 @@ Idempotent-ish: stores a checksum uniqueness constraint prevents duplicates (ux_
 Prereqs: artifact_a_schema applied and legacy table present.
 """
 from __future__ import annotations
-import os, psycopg2, hashlib
+
+import hashlib
+import os
+
+import psycopg2
 from psycopg2.extras import execute_batch
 
 DSN = os.getenv("DATABASE_URL") or os.getenv("SUPABASE_DB_URL")
@@ -32,7 +36,9 @@ if not res or any(r is None for r in res):
     raise SystemExit("documents/chunks tables missing - apply schema first")
 
 print("Scanning legacy rows...")
-cur.execute("SELECT id, source, chunk, embedding, batch_tag FROM doc_embeddings ORDER BY id")
+cur.execute(
+    "SELECT id, source, chunk, embedding, batch_tag FROM doc_embeddings ORDER BY id"
+)
 rows = cur.fetchall()
 print(f"Found {len(rows)} legacy rows")
 
@@ -40,23 +46,30 @@ print(f"Found {len(rows)} legacy rows")
 cache = {}
 inserted_chunks = 0
 
+
 def get_doc_id(source, batch_tag):
-    key = (source or 'unknown', batch_tag or 'legacy')
+    key = (source or "unknown", batch_tag or "legacy")
     if key in cache:
         return cache[key]
     content_hash = hashlib.sha1(f"{key[0]}::{key[1]}".encode()).hexdigest()
-    cur.execute("SELECT id FROM documents WHERE content_hash=%s AND version=1", (content_hash,))
+    cur.execute(
+        "SELECT id FROM documents WHERE content_hash=%s AND version=1", (content_hash,)
+    )
     r = cur.fetchone()
     if r:
         cache[key] = r[0]
         return r[0]
-    cur.execute("INSERT INTO documents (content_hash, title, source_type, raw_text) VALUES (%s,%s,%s,%s) RETURNING id", (content_hash, key[0][:200], 'legacy', None))
+    cur.execute(
+        "INSERT INTO documents (content_hash, title, source_type, raw_text) VALUES (%s,%s,%s,%s) RETURNING id",
+        (content_hash, key[0][:200], "legacy", None),
+    )
     fetched = cur.fetchone()
     if not fetched:
         raise RuntimeError("Failed to insert document")
     doc_id = fetched[0]
     cache[key] = doc_id
     return doc_id
+
 
 chunk_inserts = []
 for _id, source, text, embedding, batch_tag in rows:
@@ -65,7 +78,9 @@ for _id, source, text, embedding, batch_tag in rows:
     checksum = hashlib.sha1(text.encode()).hexdigest()
     doc_id = get_doc_id(source, batch_tag)
     # ordinal approximate by current count for doc
-    cur.execute("SELECT COALESCE(MAX(ordinal),0)+1 FROM chunks WHERE document_id=%s", (doc_id,))
+    cur.execute(
+        "SELECT COALESCE(MAX(ordinal),0)+1 FROM chunks WHERE document_id=%s", (doc_id,)
+    )
     fetched = cur.fetchone()
     ordinal = fetched[0] if fetched else 1
     chunk_inserts.append((doc_id, ordinal, text, checksum, embedding))

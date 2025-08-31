@@ -3,15 +3,19 @@ WebSocket metrics streaming endpoint for real-time dashboard monitoring.
 """
 
 from __future__ import annotations
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from typing import Dict, Any, List
+
 import asyncio
 import json
 import time
-from ..health.health_router import get_query_stats_snapshot, get_model_registry
+from typing import Any, Dict, List
+
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+
+from ..health.health_router import get_model_registry, get_query_stats_snapshot
 from ..health.system_metrics import get_system_metrics
 
 metrics_router = APIRouter()
+
 
 class ConnectionManager:
     def __init__(self):
@@ -33,19 +37,21 @@ class ConnectionManager:
                 await connection.send_text(message)
             except Exception:
                 disconnected.append(connection)
-        
+
         # Remove disconnected clients
         for connection in disconnected:
             if connection in self.active_connections:
                 self.active_connections.remove(connection)
 
+
 manager = ConnectionManager()
+
 
 @metrics_router.websocket("/ws/metrics")
 async def websocket_metrics(websocket: WebSocket):
     """WebSocket endpoint for streaming real-time metrics."""
     await manager.connect(websocket)
-    
+
     try:
         while True:
             # Collect current metrics
@@ -54,20 +60,21 @@ async def websocket_metrics(websocket: WebSocket):
                 "query_stats": get_query_stats_snapshot(),
                 "models": get_model_registry(),
                 "system": get_system_metrics(),
-                "type": "metrics_update"
+                "type": "metrics_update",
             }
-            
+
             # Send to this specific connection
             await websocket.send_text(json.dumps(metrics_data))
-            
+
             # Wait for next update cycle (5 second intervals)
             await asyncio.sleep(5)
-            
+
     except WebSocketDisconnect:
         manager.disconnect(websocket)
     except Exception as e:
         print(f"WebSocket error: {e}")
         manager.disconnect(websocket)
+
 
 @metrics_router.get("/ws/metrics/status")
 def websocket_status() -> Dict[str, Any]:
@@ -75,5 +82,5 @@ def websocket_status() -> Dict[str, Any]:
     return {
         "active_connections": len(manager.active_connections),
         "endpoint": "/ws/metrics",
-        "update_interval_seconds": 5
+        "update_interval_seconds": 5,
     }

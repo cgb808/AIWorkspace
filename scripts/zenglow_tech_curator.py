@@ -4,13 +4,12 @@ ZenGlow Tech Stack Curator
 Specialized processor for the-stack-smol dataset targeting ZenGlow's specific technology needs:
 React/React Native, TypeScript/JavaScript, Python, Docker, Database technologies, etc.
 """
-from datasets import load_dataset, Dataset
-import pandas as pd
-import os
-from pathlib import Path
-from typing import List, Optional, Dict, Any
-import statistics
 import json
+import statistics
+from pathlib import Path
+from typing import Any, Dict, Optional
+
+from datasets import load_dataset
 
 # ZenGlow Tech Stack Configuration
 ZENGLOW_TECH_STACK = {
@@ -376,14 +375,14 @@ def process_zenglow_language(
         print(f"✅ Dataset {language} loaded: {len(dataset)} samples")
 
         # Apply ZenGlow-specific filtering
-        print(f"🔍 Applying ZenGlow tech stack filtering...")
+        print("🔍 Applying ZenGlow tech stack filtering...")
         print(f"🔍 Target keywords: {', '.join(lang_config['keywords'][:5])}...")
 
         dataset, filter_stats = filter_zenglow_relevant_samples(
             dataset, language, min_quality_score
         )
 
-        print(f"📊 ZenGlow filtering results:")
+        print("📊 ZenGlow filtering results:")
         print(f"   Original: {filter_stats['total']} samples")
         print(
             f"   Filtered: {filter_stats['filtered']} samples ({filter_stats['filter_ratio']:.1%} retained)"
@@ -517,7 +516,7 @@ def main():
             if ZENGLOW_TECH_STACK[lang]["priority"] in ["critical", "high"]
         ]
 
-    print(f"🚀 ZenGlow Tech Stack Curation")
+    print("🚀 ZenGlow Tech Stack Curation")
     print(f"📊 Processing {len(languages)} languages: {', '.join(languages)}")
     print(f"🎯 Max samples per language: {args.max_samples}")
     print(f"🎯 Min quality score: {args.min_quality}")
@@ -542,14 +541,14 @@ def main():
             print(f"❌ {language} failed")
 
     # Summary
-    print(f"\n📈 ZenGlow Curation Complete!")
+    print("\n📈 ZenGlow Curation Complete!")
     print(f"✅ Successful: {len(results['success'])} languages")
     print(f"❌ Failed: {len(results['failed'])} languages")
 
     if results["success"]:
-        print(f"\n🎯 Next steps:")
+        print("\n🎯 Next steps:")
         print(f"1. Review curated data in: {args.output_dir}")
-        print(f"2. Integrate with ZenGlow pipeline:")
+        print("2. Integrate with ZenGlow pipeline:")
         for lang in results["success"]:
             print(
                 f"   python scripts/enhanced_intake_to_redis.py --source {args.output_dir}/{lang}/zenglow_curated.json"

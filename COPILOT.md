@@ -43,6 +43,10 @@ These SOPs define safe, efficient collaboration with the AI terminal co‑pilot.
 
 Reject / relocate any proposed root additions automatically unless explicitly instructed.
 
+Automated Enforcement:
+- Run `python scripts/root_hygiene_check.py` prior to committing large doc reorganizations.
+- Any new root markdown outside allowlist triggers failure (pending CI integration). Keep doc additions in `docs/`.
+
 ---
 ## 3. Modes of Operation
 ### Mode A — Manual (⚙️ Precision)
@@ -128,5 +132,9 @@ Co‑pilot iterates steps; on anomaly → manual.
 ---
 ## 11. Implementation Notes
 Internalize: mode heuristic, safety matrix, error protocol.
+
+Hygiene Artifacts:
+- Feature: Clarifying priority (heuristic + feature extractor) tracked in `app/rag/clarify_priority_features.py` and dataset builder `scripts/build_clarify_priority_dataset.py`.
+- Root hygiene audit in `docs/ROOT_HYGIENE_AUDIT.md`.
 
 ✅ End of SOP

@@ -15,8 +15,12 @@ Idempotent: each file already guards with IF NOT EXISTS.
 Safe to re-run. Aborts on first failure.
 """
 from __future__ import annotations
-import os, sys, psycopg2
+
+import os
+import sys
 from pathlib import Path
+
+import psycopg2
 
 SQL_FILES = [
     "sql/init.sql",

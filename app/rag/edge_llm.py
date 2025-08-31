@@ -2,9 +2,10 @@
 Supabase Edge Function integration for ZenGlow RAG pipeline.
 Used for egress (LLM generation or data retrieval).
 """
+
 import os
-from typing import Optional
-from supabase import create_client, Client
+
+from supabase import Client, create_client
 
 _supabase_client: Client | None = None
 
@@ -28,7 +29,9 @@ def _get_client() -> Client | None:
         _supabase_client = None
     return _supabase_client
 
+
 EDGE_FUNCTION_NAME = os.environ.get("SUPABASE_EDGE_FUNCTION", "get_gemma_response")
+
 
 def get_edge_model_response(prompt: str) -> str:
     client = _get_client()
@@ -39,8 +42,8 @@ def get_edge_model_response(prompt: str) -> str:
             EDGE_FUNCTION_NAME,
             invoke_options={
                 "body": {"prompt": prompt},
-                "headers": {"Content-Type": "application/json"}
-            }
+                "headers": {"Content-Type": "application/json"},
+            },
         )
         data = getattr(response, "data", response)
         return data if isinstance(data, str) else str(data)

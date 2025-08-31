@@ -1,0 +1,1 @@
+ZenGlow sample document. This is a tiny seed passage about hybrid pedagogy and math tutoring effectiveness for RAG pipeline seeding.
