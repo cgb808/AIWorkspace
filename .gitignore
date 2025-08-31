@@ -57,4 +57,7 @@ venv/
 dist/
 build/
 
+# Large model / dataset artifacts (added after remote rejection)
+data/standard/english_standard_dataset.jsonl
+whisper/ggml-base.en.bin
 # --- END DO NOT PUSH BLOCK ---
